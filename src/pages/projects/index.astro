@@ -1,8 +1,60 @@
 ---
-// P1 placeholder — replaced in P5.
+// Projects list. Intro: planning/sitemap.md (Projects) and the About principles.
+import { getCollection } from 'astro:content';
 import BaseLayout from '../../layouts/BaseLayout.astro';
-import PagePlaceholder from '../../components/PagePlaceholder.astro';
+import ProjectCard from '../../components/ProjectCard.astro';
+import { url } from '../../lib/url';
+
+const projects = (await getCollection('projects')).sort((a, b) => a.data.order - b.data.order);
 ---
-<BaseLayout title="Projects" description="RAISE Hub tool projects: the need, the users, what was built, how it was tested, its limitations and its status.">
-  <PagePlaceholder heading="Projects" step="P5" />
+<BaseLayout
+  title="Projects"
+  description="RAISE Hub tool projects: the need, the intended users, what was built, how it was tested, its limitations and its current status."
+>
+  <header class="section page-hero">
+    <div class="container">
+      <h1>Projects</h1>
+      <p class="lede">
+        Every project follows build → evaluate → improve. A project is complete only together with its
+        reviewed evaluation.
+      </p>
+      <p class="muted">
+        Each page explains the need, the intended users, what was built, how it was tested, its limitations
+        and its current status. See <a href={url('/about/#responsible')}>what “responsible” means</a>.
+      </p>
+    </div>
+  </header>
+
+  <section class="section" aria-labelledby="projects-heading">
+    <div class="container">
+      <h2 id="projects-heading" class="visually-hidden">All projects</h2>
+      <ul class="card-list grid">
+        {projects.map((p) => (
+          <li><ProjectCard project={p} /></li>
+        ))}
+      </ul>
+    </div>
+  </section>
 </BaseLayout>
+
+<style>
+  .page-hero {
+    background: var(--surface-alt);
+    border-bottom: 1px solid var(--border);
+  }
+  .page-hero .lede {
+    max-width: 46rem;
+  }
+  .card-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+  .card-list > li {
+    margin: 0;
+    display: flex;
+  }
+  .card-list > li > :global(*) {
+    flex: 1;
+  }
+</style>

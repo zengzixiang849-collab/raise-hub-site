@@ -1,0 +1,232 @@
+---
+// Project detail. Fixed field order (Annus's brief): Need · Intended users ·
+// What was built · How it was tested · Limitations · Current status,
+// then the five-dimension evaluation (pending until reviewed) and related workshops.
+import { getCollection, type CollectionEntry } from 'astro:content';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import ReviewPending from '../../components/ReviewPending.astro';
+import { DIMENSIONS } from '../../lib/dimensions';
+import { url } from '../../lib/url';
+
+export async function getStaticPaths() {
+  const projects = await getCollection('projects');
+  return projects.map((project) => ({ params: { slug: project.id }, props: { project } }));
+}
+
+interface Props {
+  project: CollectionEntry<'projects'>;
+}
+const { project } = Astro.props;
+const { data } = project;
+
+const FIELDS = [
+  { id: 'need', label: 'Need', text: data.need },
+  { id: 'users', label: 'Intended users', text: data.intendedUsers },
+  { id: 'built', label: 'What was built', text: data.whatWasBuilt },
+  { id: 'tested', label: 'How it was tested', text: data.howTested },
+  { id: 'limitations', label: 'Limitations', text: data.limitations },
+  { id: 'status', label: 'Current status', text: data.status },
+];
+
+const evaluation = data.evaluation
+  ? [
+      data.evaluation.accuracy,
+      data.evaluation.biasFairness,
+      data.evaluation.limitsUncertainty,
+      data.evaluation.powerPublicValue,
+      data.evaluation.responsibleUseDecision,
+    ]
+  : null;
+
+const workshops = await getCollection('workshops');
+const related = data.relatedWorkshops
+  .map((slug) => workshops.find((w) => w.id === slug))
+  .filter((w): w is CollectionEntry<'workshops'> => Boolean(w));
+
+const firstSentence = data.need.match(/^.*?[.!?](\s|$)/)?.[0].trim() ?? data.need;
+---
+<BaseLayout title={data.title} description={firstSentence}>
+  <article>
+    <header class="section project-hero">
+      <div class="container">
+        <p class="breadcrumb"><a href={url('/projects/')}>Projects</a></p>
+        <h1>{data.title}</h1>
+        <p class="project-hero__status">
+          <span class="status-dot" aria-hidden="true"></span>
+          <span><strong>Status:</strong> {data.status}</span>
+        </p>
+        {data.reviewNotes.map((note) => <ReviewPending note={note} />)}
+      </div>
+    </header>
+
+    <div class="section">
+      <div class="container project-body">
+        <dl class="fields">
+          {FIELDS.map((f, i) => (
+            <div class="field" id={f.id}>
+              <dt><span class="field__num" aria-hidden="true">{i + 1}</span>{f.label}</dt>
+              <dd>{f.text}</dd>
+            </div>
+          ))}
+        </dl>
+
+        <section class="evaluation" id="evaluation" aria-labelledby="evaluation-heading">
+          <h2 id="evaluation-heading">Five-dimension evaluation</h2>
+          {evaluation && data.evaluation ? (
+            <>
+              <dl class="eval-list">
+                {DIMENSIONS.map((d, i) => (
+                  <div>
+                    <dt>{d.name}</dt>
+                    <dd>{evaluation[i]}</dd>
+                  </div>
+                ))}
+              </dl>
+              <p class="muted">Reviewed by {data.evaluation.reviewedBy} on {data.evaluation.reviewedOn}.</p>
+            </>
+          ) : (
+            <div class="eval-pending">
+              <p class="eval-pending__title">Evaluation review pending</p>
+              <p>
+                A completed RAISE tool project is published together with its reviewed evaluation across all
+                five dimensions:
+              </p>
+              <ul>
+                {DIMENSIONS.map((d) => <li>{d.name}</li>)}
+              </ul>
+              <p class="muted">
+                See <a href={url('/about/#responsible')}>what each dimension asks</a>.
+              </p>
+            </div>
+          )}
+          <ReviewPending item="B6" note="Who reviews and signs off this project's five-dimension evaluation before it appears here?" />
+        </section>
+
+        {related.length > 0 && (
+          <section class="related" aria-labelledby="related-heading">
+            <h2 id="related-heading">Related workshops</h2>
+            <ul>
+              {related.map((w) => (
+                <li><a href={url(`/workshops/${w.id}/`)}>{w.data.title}</a> <span class="muted">· {w.data.audience}</span></li>
+              ))}
+            </ul>
+          </section>
+        )}
+
+        <p class="back"><a href={url('/projects/')}>← All projects</a></p>
+      </div>
+    </div>
+  </article>
+</BaseLayout>
+
+<style>
+  .project-hero {
+    background: var(--surface-alt);
+    border-bottom: 1px solid var(--border);
+  }
+  .breadcrumb {
+    font-size: var(--step--1);
+    margin-bottom: var(--space-s);
+  }
+  .project-hero__status {
+    display: flex;
+    align-items: baseline;
+    gap: var(--space-xs);
+    color: var(--ink);
+    max-width: 46rem;
+  }
+  .status-dot {
+    flex-shrink: 0;
+    width: 0.65rem;
+    height: 0.65rem;
+    border-radius: 50%;
+    border: 2px solid var(--gray);
+  }
+
+  .project-body {
+    max-width: 52rem;
+  }
+  .fields {
+    margin: 0;
+    display: grid;
+    gap: var(--space-m);
+  }
+  .field {
+    display: grid;
+    gap: var(--space-xs);
+    padding-bottom: var(--space-m);
+    border-bottom: 1px solid var(--border);
+  }
+  @media (min-width: 48rem) {
+    .field {
+      grid-template-columns: 14rem 1fr;
+      gap: var(--space-l);
+    }
+  }
+  .field dt {
+    display: flex;
+    align-items: center;
+    gap: var(--space-xs);
+    font-weight: 700;
+    color: var(--maroon);
+    font-size: var(--step-1);
+    line-height: 1.3;
+  }
+  .field__num {
+    display: inline-grid;
+    place-items: center;
+    flex-shrink: 0;
+    width: 1.7rem;
+    height: 1.7rem;
+    border-radius: 50%;
+    background: var(--maroon);
+    color: var(--white);
+    font-size: var(--step--1);
+  }
+  .field dd {
+    margin: 0;
+    max-width: var(--text-max);
+  }
+
+  .evaluation {
+    margin-top: var(--space-xl);
+  }
+  .evaluation h2,
+  .related h2 {
+    font-size: var(--step-2);
+  }
+  .eval-pending {
+    border: 2px dashed #b8b2a7;
+    border-radius: var(--radius);
+    padding: var(--space-m) var(--space-l);
+    background: var(--surface-alt);
+  }
+  .eval-pending__title {
+    font-weight: 700;
+    font-size: var(--step-1);
+    color: var(--ink);
+    margin-bottom: var(--space-xs);
+  }
+  .eval-pending ul {
+    columns: 2 14rem;
+  }
+  .eval-list {
+    margin: 0;
+    display: grid;
+    gap: var(--space-s);
+  }
+  .eval-list dt {
+    font-weight: 700;
+    color: var(--maroon);
+  }
+  .eval-list dd {
+    margin: 0;
+  }
+  .related {
+    margin-top: var(--space-xl);
+  }
+  .back {
+    margin-top: var(--space-xl);
+    font-weight: 700;
+  }
+</style>

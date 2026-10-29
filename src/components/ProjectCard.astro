@@ -1,0 +1,88 @@
+---
+import type { CollectionEntry } from 'astro:content';
+import { url } from '../lib/url';
+
+interface Props {
+  project: CollectionEntry<'projects'>;
+}
+const { project } = Astro.props;
+const { data, id } = project;
+// Card summary: the first sentence of the "need" field.
+const firstSentence = data.need.match(/^.*?[.!?](\s|$)/)?.[0].trim() ?? data.need;
+---
+<article class="project-card">
+  <h3 class="project-card__title">
+    <a href={url(`/projects/${id}/`)}>{data.title}</a>
+  </h3>
+  <p class="project-card__need"><span class="project-card__label">Need:</span> {firstSentence}</p>
+  <p class="project-card__status">
+    <span class="status-dot" aria-hidden="true"></span>
+    {data.status}
+  </p>
+  <p class="project-card__eval">
+    {data.evaluation ? 'Evaluation reviewed' : 'Evaluation review pending'}
+  </p>
+</article>
+
+<style>
+  .project-card {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-top: 6px solid var(--maroon);
+    border-radius: var(--radius);
+    padding: var(--space-m) var(--space-m) var(--space-l);
+    transition: border-color 150ms ease, box-shadow 150ms ease;
+  }
+  .project-card:hover,
+  .project-card:focus-within {
+    border-color: var(--maroon);
+    box-shadow: 0 2px 10px rgba(38, 38, 38, 0.08);
+  }
+  .project-card__title {
+    font-size: var(--step-1);
+    margin-bottom: var(--space-xs);
+  }
+  .project-card__title a {
+    text-decoration: none;
+  }
+  .project-card__title a::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+  }
+  .project-card__title a:hover {
+    text-decoration: underline;
+  }
+  .project-card__need {
+    flex: 1;
+  }
+  .project-card__label {
+    font-weight: 700;
+  }
+  .project-card__status,
+  .project-card__eval {
+    margin: 0;
+    font-size: var(--step--1);
+    color: var(--gray);
+  }
+  .project-card__status {
+    display: flex;
+    gap: var(--space-xs);
+    align-items: baseline;
+    margin-bottom: var(--space-2xs);
+  }
+  .status-dot {
+    flex-shrink: 0;
+    width: 0.6rem;
+    height: 0.6rem;
+    border-radius: 50%;
+    border: 2px solid var(--gray);
+    transform: translateY(0.05rem);
+  }
+  .project-card__eval {
+    font-weight: 700;
+  }
+</style>

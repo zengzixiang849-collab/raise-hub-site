@@ -14,8 +14,11 @@ interface Props {
 const { workshop } = Astro.props;
 const { data } = workshop;
 
-// Related projects: added in P5, when the project collection and pages exist.
-const related: CollectionEntry<'projects'>[] = [];
+// Related projects (linked only if the project exists).
+const projects = await getCollection('projects');
+const related = data.relatedProjects
+  .map((slug) => projects.find((p) => p.id === slug))
+  .filter((p): p is CollectionEntry<'projects'> => Boolean(p));
 ---
 <BaseLayout title={data.title} description={data.summary}>
   <article>
