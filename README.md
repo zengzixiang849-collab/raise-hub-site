@@ -52,6 +52,8 @@ $env:BASE_PATH="/raise-hub/"; npm run build; npm run preview
 | Colors, fonts, spacing | `src/styles/global.css` |
 | Logos and favicon | `public/brand/` |
 
+> Content files are read by a small custom loader (`src/lib/frontmatter-loader.ts`) instead of Astro's built-in `glob()` loader, because `glob()` fails when the project path contains non-ASCII characters (as it does on the current development machine). All content lives in the front matter (between the two `---` lines). Files starting with `_` are templates and are ignored. **While `npm run dev` is running, restart it (Ctrl+C, then `npm run dev`) after editing content files.**
+
 ### Add a workshop
 
 1. Copy any file in `src/content/workshops/` and rename it to the new slug (for example `my-new-workshop.md`).
