@@ -46,6 +46,16 @@ function visibleText(html) {
     .trim();
 }
 
+// Text as the reader sees it: inline tags removed WITHOUT adding a space, so a
+// space lost between text and a link/bold/italic shows up ("workshops:Using").
+function renderedText(html) {
+  return visibleText(
+    html
+      .replace(/<(style|script)[\s\S]*?<\/\1>/gi, ' ')
+      .replace(/<\/?(a|strong|em|b|i|span|code|abbr|small)\b[^>]*>/gi, ''),
+  );
+}
+
 // ---- Run -------------------------------------------------------------------
 const pages = walk(dist).filter((f) => f.endsWith('.html'));
 const failures = [];
@@ -89,6 +99,10 @@ for (const file of pages) {
   if (/@import\s+url\(|fonts\.googleapis|fonts\.gstatic|cdn\.jsdelivr|unpkg\.com/.test(html)) {
     fail(page, 'external font/CDN reference');
   }
+
+  // Missing space after punctuation (e.g. lost between text and an inline tag)
+  const glued = renderedText(html).match(/\b[A-Za-z]{2,}[,;:][A-Za-z]{2,}\b/g);
+  if (glued) fail(page, `missing space after punctuation: ${[...new Set(glued)].slice(0, 5).join(', ')}`);
 
   // Content rules
   if (/Student Education/i.test(text)) fail(page, 'deprecated "Student Education"');

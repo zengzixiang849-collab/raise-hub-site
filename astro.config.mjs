@@ -12,6 +12,9 @@ export default defineConfig({
   base,
   output: 'static',
   trailingSlash: 'always',
+  // HTML compression dropped the line break between text and an inline tag
+  // ("tagline,Responsible", "atannus.azhar"), found by real-browser QA on 30 Oct.
+  compressHTML: false,
   build: {
     format: 'directory',
   },

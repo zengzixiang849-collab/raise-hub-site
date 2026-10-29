@@ -30,6 +30,9 @@ function pageText(rel) {
     html
       .replace(/<head[\s\S]*?<\/head>/i, ' ')
       .replace(/<(style|script)[\s\S]*?<\/\1>/gi, ' ')
+      // Inline tags vanish without adding a space, so a missing space in the
+      // rendered page ("tagline,Responsible", "toolsand") is detected.
+      .replace(/<\/?(a|strong|em|b|i|span|code|abbr|small)\b[^>]*>/gi, '')
       .replace(/<[^>]+>/g, ' ')
       .replace(/&amp;/g, '&')
       .replace(/&#39;/g, "'")
@@ -162,6 +165,7 @@ const corpus = norm(
 const UI_ALLOWED = [
   /^\d+ sessions in \d+ workshops, including the three-session series for teaching assistants\.$/, // computed from content (START_HERE)
   /^From (the workshops?|RAISE Hub's evaluation guidance)/, // source attribution label
+  /^TSA Workshop Series · Session \d: [A-Z][\w ]+$/, // link label assembled from series + session titles (content inventory §A)
 ];
 
 const unsourced = [];
