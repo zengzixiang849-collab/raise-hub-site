@@ -221,7 +221,8 @@ const WORDS = ['Responsible', 'AI', 'Support', 'in', 'Education'];
     border-bottom: 1px solid var(--border);
   }
   .acronym {
-    margin-top: var(--space-m);
+    /* extra top space = the raise height, so the lifted tiles never touch the h1 */
+    margin-top: calc(var(--space-m) + 0.3 * clamp(2.6rem, 9vw, 3.5rem));
     display: inline-block;
   }
   .acronym__letters {
@@ -240,11 +241,13 @@ const WORDS = ['Responsible', 'AI', 'Support', 'in', 'Education'];
     font-weight: 700;
   }
   /* The raised AI: gold letters on a darker tile, lifted like the wordmark.
+     The logo raises "AI" by ~30% of letter height (SVG: dy -13 at font-size 60),
+     so the tiles are lifted by 30% of their own height — scales with tile size.
      Large bold text: gold on this tile is 5.3:1. */
   .acronym__letter--ai {
     background: #731834;
     color: var(--gold);
-    transform: translateY(-0.4rem);
+    transform: translateY(-30%);
   }
   .acronym__words {
     display: flex;
