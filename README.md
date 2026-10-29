@@ -24,7 +24,8 @@ Other commands:
 | `npm run build` | Builds the finished site into `dist/` |
 | `npm run preview` | Serves the built `dist/` at http://localhost:4321 (use this for demos) |
 | `npm run check` | Type-checks pages, components and content |
-| `npm run verify` | **Run before every commit.** Type check → build → link check → content/accessibility check (rules from `../CLAUDE.md` §6) |
+| `npm run verify` | **Run before every commit.** Type check → build → link check → content/accessibility check → interactive test (rules from `../CLAUDE.md` §6) |
+| `node scripts/check-copy.mjs` | After copy changes: checks every sentence of `../planning/` drafts appears verbatim on the right page |
 | `npm run check:links` / `npm run check:content` | Run one checker on the current `dist/` (add a base path, e.g. `node scripts/check-links.mjs /raise-hub/`) |
 
 > **Windows note:** if PowerShell says *"running scripts is disabled on this system"*, type `npm.cmd` instead of `npm` (for example `npm.cmd run dev`).
