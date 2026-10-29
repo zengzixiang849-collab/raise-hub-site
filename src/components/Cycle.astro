@@ -1,0 +1,101 @@
+---
+// "Learning by doing" — five steps rendered as an ordered list (accessible),
+// styled as a loop. Copy: planning/homepage-about-draft.md, HOME §3.
+const STEPS = [
+  { lead: 'Identify a real need', rest: 'in teaching or learning at HAIC.' },
+  { lead: 'Build or adapt', rest: 'a small tool or workflow.' },
+  { lead: 'Evaluate', rest: 'it: test its outputs against approved sources and our five dimensions.' },
+  { lead: 'Reflect', rest: 'on what the evidence shows, including where it failed.' },
+  { lead: 'Improve', rest: 'it, retest, and decide whether, how and by whom it should be used.' },
+];
+---
+<div class="cycle">
+  <ol class="cycle__steps">
+    {STEPS.map((s, i) => (
+      <li class="cycle__step">
+        <span class="cycle__num" aria-hidden="true">{i + 1}</span>
+        <p><strong>{s.lead}</strong> {s.rest}</p>
+      </li>
+    ))}
+  </ol>
+  <div class="cycle__return" aria-hidden="true">
+    <svg viewBox="0 0 24 24" width="22" height="22" focusable="false">
+      <path d="M20 12a8 8 0 1 1-2.34-5.66" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" />
+      <path d="M20 3v5h-5" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" />
+    </svg>
+    <span>and back to step 1</span>
+  </div>
+</div>
+
+<style>
+  .cycle__steps {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    gap: var(--space-s);
+    grid-template-columns: 1fr;
+    counter-reset: none;
+  }
+  @media (min-width: 56rem) {
+    .cycle__steps {
+      grid-template-columns: repeat(5, 1fr);
+      gap: var(--space-l);
+    }
+  }
+  .cycle__step {
+    position: relative;
+    margin: 0;
+    padding: var(--space-m);
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    display: flex;
+    gap: var(--space-s);
+    align-items: flex-start;
+  }
+  @media (min-width: 56rem) {
+    .cycle__step {
+      flex-direction: column;
+    }
+    /* Chevron between steps (decorative) */
+    .cycle__step:not(:last-child)::after {
+      content: '';
+      position: absolute;
+      top: 1.85rem;
+      right: calc(-1 * var(--space-l) / 2 - 0.4rem);
+      width: 0.8rem;
+      height: 0.8rem;
+      border-top: 3px solid var(--maroon);
+      border-right: 3px solid var(--maroon);
+      transform: rotate(45deg);
+    }
+  }
+  .cycle__step p {
+    margin: 0;
+  }
+  .cycle__step strong {
+    color: var(--maroon);
+  }
+  .cycle__num {
+    flex-shrink: 0;
+    display: inline-grid;
+    place-items: center;
+    width: 2.25rem;
+    height: 2.25rem;
+    border-radius: 50%;
+    background: var(--maroon);
+    color: var(--white);
+    font-weight: 700;
+  }
+  .cycle__return {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: var(--space-xs);
+    margin-top: var(--space-s);
+    color: var(--maroon);
+    font-size: var(--step--1);
+    font-weight: 700;
+  }
+</style>

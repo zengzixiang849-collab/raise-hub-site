@@ -264,6 +264,37 @@ strong {
   grid-template-columns: repeat(auto-fill, minmax(min(100%, 18rem), 1fr));
 }
 
+/* ---------- Badges and chips ---------- */
+.badge {
+  display: inline-block;
+  padding: 0.15rem 0.6rem;
+  border-radius: 999px;
+  background: var(--maroon);
+  color: var(--white);
+  font-weight: 700;
+  font-size: var(--step--1);
+  line-height: 1.5;
+}
+
+.chips {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2xs) var(--space-xs);
+}
+
+.chips li {
+  margin: 0;
+  padding: 0.1rem 0.6rem;
+  border: 1px solid #c9c4bb;
+  border-radius: 999px;
+  color: var(--gray);
+  background: var(--surface);
+  font-size: var(--step--1);
+}
+
 /* ---------- Placeholder used before a page is built ---------- */
 .placeholder {
   border: 2px dashed var(--border);

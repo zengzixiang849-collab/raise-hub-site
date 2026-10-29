@@ -1,0 +1,149 @@
+---
+import { getCollection, type CollectionEntry } from 'astro:content';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { url } from '../../lib/url';
+
+export async function getStaticPaths() {
+  const workshops = await getCollection('workshops');
+  return workshops.map((workshop) => ({ params: { slug: workshop.id }, props: { workshop } }));
+}
+
+interface Props {
+  workshop: CollectionEntry<'workshops'>;
+}
+const { workshop } = Astro.props;
+const { data } = workshop;
+
+// Related projects: added in P5, when the project collection and pages exist.
+const related: CollectionEntry<'projects'>[] = [];
+---
+<BaseLayout title={data.title} description={data.summary}>
+  <article>
+    <header class="section workshop-hero">
+      <div class="container">
+        <p class="breadcrumb"><a href={url('/workshops/')}>Workshops</a></p>
+        <p class="workshop-hero__meta">
+          <span class="badge">{data.audience}</span>
+          {data.status === 'delivered' && <span class="muted">Delivered session</span>}
+          {data.sessions && <span class="muted">· {data.sessions.length} sessions</span>}
+          {data.date && <span class="muted">· {data.date}</span>}
+        </p>
+        <h1>{data.title}</h1>
+        <p class="lede">{data.summary}</p>
+        <ul class="chips" aria-label="Session format">
+          {data.formats.map((f) => <li>{f}</li>)}
+        </ul>
+        {data.fictionalMaterials && (
+          <p class="note">Examples in this workshop use fictional course materials.</p>
+        )}
+      </div>
+    </header>
+
+    <div class="section">
+      <div class="container workshop-body">
+        {data.seriesPurpose && (
+          <section>
+            <h2>Series purpose</h2>
+            <p>{data.seriesPurpose}</p>
+          </section>
+        )}
+
+        {data.sessions?.map((s) => (
+          <section class="session" id={`session-${s.number}`}>
+            <p class="eyebrow">Session {s.number} of {data.sessions?.length}</p>
+            <h2>{s.title}</h2>
+            <ul class="chips" aria-label="Session format">
+              {s.formats.map((f) => <li>{f}</li>)}
+            </ul>
+            <h3>Key ideas</h3>
+            <ul>{s.keyIdeas.map((k) => <li>{k}</li>)}</ul>
+            <h3>Participants leave with</h3>
+            <p>{s.leaveWith}</p>
+          </section>
+        ))}
+
+        {data.keyIdeas.length > 0 && (
+          <section>
+            <h2>Key ideas</h2>
+            <ul>{data.keyIdeas.map((k) => <li>{k}</li>)}</ul>
+          </section>
+        )}
+
+        {data.practise && (
+          <section>
+            <h2>What participants practise</h2>
+            <p>{data.practise}</p>
+          </section>
+        )}
+
+        {data.leaveWith && (
+          <section>
+            <h2>Participants leave with</h2>
+            <p>{data.leaveWith}</p>
+          </section>
+        )}
+
+        {related.length > 0 && (
+          <section>
+            <h2>Related projects</h2>
+            <ul>
+              {related.map((p) => <li><a href={url(`/projects/${p.id}/`)}>{p.data.title}</a></li>)}
+            </ul>
+          </section>
+        )}
+
+        <p class="back"><a href={url('/workshops/')}>← All workshops</a></p>
+      </div>
+    </div>
+  </article>
+</BaseLayout>
+
+<style>
+  .workshop-hero {
+    background: var(--surface-alt);
+    border-bottom: 1px solid var(--border);
+  }
+  .breadcrumb {
+    font-size: var(--step--1);
+    margin-bottom: var(--space-s);
+  }
+  .workshop-hero__meta {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--space-xs);
+    font-size: var(--step--1);
+    margin-bottom: var(--space-s);
+  }
+  .note {
+    margin-top: var(--space-m);
+    font-size: var(--step--1);
+    color: var(--gray);
+  }
+  .workshop-body {
+    max-width: 52rem;
+  }
+  .workshop-body section + section {
+    margin-top: var(--space-xl);
+  }
+  .workshop-body h2 {
+    font-size: var(--step-2);
+  }
+  .workshop-body h3 {
+    font-size: var(--step-1);
+    margin-top: var(--space-m);
+  }
+  .session {
+    padding: var(--space-l);
+    border: 1px solid var(--border);
+    border-left: 6px solid var(--maroon);
+    border-radius: var(--radius);
+  }
+  .session .chips {
+    margin-bottom: var(--space-s);
+  }
+  .back {
+    margin-top: var(--space-xl);
+    font-weight: 700;
+  }
+</style>

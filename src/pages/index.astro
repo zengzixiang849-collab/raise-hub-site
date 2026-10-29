@@ -1,8 +1,233 @@
 ---
-// P1 placeholder — replaced by the real homepage in P2.
+// Homepage. Copy: planning/homepage-about-draft.md, HOME §1–7 (used as written).
+import { getCollection } from 'astro:content';
 import BaseLayout from '../layouts/BaseLayout.astro';
-import PagePlaceholder from '../components/PagePlaceholder.astro';
+import Hero from '../components/Hero.astro';
+import Cycle from '../components/Cycle.astro';
+import FiveDimensions from '../components/FiveDimensions.astro';
+import WorkshopCard from '../components/WorkshopCard.astro';
+import ReviewPending from '../components/ReviewPending.astro';
+import { SITE } from '../lib/site';
+import { url } from '../lib/url';
+
+const workshops = (await getCollection('workshops'))
+  .filter((w) => w.data.status === 'delivered')
+  .sort((a, b) => a.data.order - b.data.order);
+
+const byId = Object.fromEntries(workshops.map((w) => [w.id, w]));
+const link = (id: string, label?: string) => ({
+  href: url(`/workshops/${id}/`),
+  label: label ?? byId[id]?.data.title ?? id,
+});
+
+const AUDIENCES = [
+  {
+    name: 'Faculty',
+    text: 'Build and test course assistants, and prepare clearer teaching materials with AI drafting and human checking. You keep academic judgment and every release decision.',
+    links: [link('canvas-page-students-read'), link('ai-course-assistant')],
+  },
+  {
+    name: 'Students',
+    text: 'Decide which parts of an assignment you do yourself and where AI can help. Learn to check what AI gives you, and build your own learning assistant. You stay responsible for the result.',
+    links: [link('pick-the-right-job-for-ai'), link('ai-learning-assistant'), link('using-ai-responsibly-freshmen')],
+  },
+  {
+    name: 'Teaching assistants',
+    text: 'Help faculty develop, test and maintain course-support tools, and hand back the evidence so faculty can decide.',
+    links: [link('tsa-series', 'TSA Workshop Series (3 sessions)')],
+  },
+];
 ---
 <BaseLayout>
-  <PagePlaceholder heading="Responsible AI for Teaching and Learning" step="P2" />
+  <!-- 1. Hero -->
+  <Hero />
+
+  <!-- 2. The need we address -->
+  <section class="section section--alt" aria-labelledby="need-heading">
+    <div class="container need">
+      <h2 id="need-heading">AI is fluent. That doesn't make it right.</h2>
+      <div class="need__body">
+        <p>
+          AI tools can draft, summarize and answer questions in seconds. They can also invent a deadline,
+          miss a key fact or agree with a wrong assumption, and sound just as confident when they do.
+        </p>
+        <p>
+          So we start somewhere else: <strong>with a need worth addressing.</strong> We ask whether AI is
+          appropriate for it at all, and we consider who could benefit or be affected. Because tools and
+          needs keep changing, we check outputs and suitability again over time.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- 3. How we work -->
+  <section class="section" id="how-we-work" aria-labelledby="how-heading">
+    <div class="container">
+      <h2 id="how-heading">Learning by doing</h2>
+      <p class="intro">We learn by working on real problems:</p>
+      <Cycle />
+      <p class="callout">
+        A polished output or a high platform score alone is not enough evidence that a tool works well.
+      </p>
+    </div>
+  </section>
+
+  <!-- 4. Who we support -->
+  <section class="section section--alt" aria-labelledby="who-heading">
+    <div class="container">
+      <h2 id="who-heading">Who we work with</h2>
+      <div class="audiences">
+        {AUDIENCES.map((a) => (
+          <article class="audience">
+            <h3>{a.name}</h3>
+            <p>{a.text}</p>
+            <ul class="audience__links" aria-label={`Workshops for ${a.name.toLowerCase()}`}>
+              {a.links.map((l) => <li><a href={l.href}>{l.label}</a></li>)}
+            </ul>
+          </article>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <!-- 5. What "responsible" means -->
+  <section class="section dims-band" aria-labelledby="dims-heading">
+    <div class="container">
+      <h2 id="dims-heading">Five questions we ask of every tool</h2>
+      <FiveDimensions variant="dark" />
+      <p class="dims-band__more">
+        <a href={url('/about/#responsible')}>Read more about how we evaluate</a>
+      </p>
+    </div>
+  </section>
+
+  <!-- 6. Workshops so far -->
+  <section class="section" aria-labelledby="workshops-heading">
+    <div class="container">
+      <h2 id="workshops-heading">Workshops</h2>
+      <p class="intro">
+        Our workshops introduce these habits and offer a route into project work and support. Depending on
+        the session, participants observe a worked example, define a task, build something, or test and
+        revise it.
+      </p>
+      <div class="grid">
+        {workshops.map((w) => <WorkshopCard workshop={w} />)}
+      </div>
+      <p class="more">
+        <a class="button button--secondary" href={url('/workshops/')}>See all workshops</a>
+      </p>
+    </div>
+  </section>
+
+  <!-- 7. Get in touch -->
+  <section class="section section--alt" aria-labelledby="contact-heading">
+    <div class="container contact">
+      <h2 id="contact-heading">Get in touch</h2>
+      <p class="lede">
+        Interested in a workshop, a project idea or support for your course? Contact Annus Azhar, Ph.D., at
+        <a href={`mailto:${SITE.contactEmail}`}><strong>{SITE.contactEmail}</strong></a>.
+      </p>
+      <ReviewPending
+        item="A5"
+        note="Confirm this email may appear publicly (it appears on the delivered decks), and whether to mention office hours, a general RAISE address or a location."
+      />
+    </div>
+  </section>
 </BaseLayout>
+
+<style>
+  .intro {
+    font-size: var(--step-1);
+    margin-bottom: var(--space-l);
+  }
+
+  /* 2. Need */
+  .need {
+    display: grid;
+    gap: var(--space-m) var(--space-xl);
+  }
+  @media (min-width: 56rem) {
+    .need {
+      grid-template-columns: 1fr 1.3fr;
+      align-items: start;
+    }
+  }
+  .need h2 {
+    font-size: var(--step-3);
+  }
+  .need__body p {
+    font-size: var(--step-1);
+    line-height: 1.55;
+  }
+
+  /* 3. How we work */
+  .callout {
+    margin-top: var(--space-l);
+    padding: var(--space-m) var(--space-l);
+    border-left: 6px solid var(--maroon);
+    background: var(--surface-alt);
+    font-weight: 700;
+    max-width: none;
+  }
+
+  /* 4. Audiences */
+  .audiences {
+    display: grid;
+    gap: var(--space-m);
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 18rem), 1fr));
+  }
+  .audience {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-top: 6px solid var(--maroon);
+    border-radius: var(--radius);
+    padding: var(--space-m) var(--space-m) var(--space-l);
+  }
+  .audience h3 {
+    font-size: var(--step-2);
+  }
+  .audience__links {
+    margin: 0;
+    padding-left: 1.1rem;
+    font-size: var(--step--1);
+  }
+  .audience__links a {
+    font-weight: 700;
+  }
+
+  /* 5. Dimensions band (maroon). White text 8.9:1. Gold text directly on maroon
+     is only 4.3:1, so gold is never used for normal text here (cards use a darker
+     background where gold reaches 5.3:1). */
+  .dims-band {
+    background: var(--maroon);
+    color: var(--white);
+  }
+  .dims-band h2 {
+    color: var(--white);
+    margin-bottom: var(--space-l);
+  }
+  .dims-band__more {
+    margin: var(--space-l) 0 0;
+  }
+  .dims-band__more a {
+    color: var(--white);
+    font-weight: 700;
+  }
+  .dims-band__more a:hover {
+    color: var(--white);
+    text-decoration-thickness: 3px;
+  }
+  .dims-band :focus-visible {
+    outline-color: var(--gold);
+  }
+
+  /* 6. Workshops */
+  .more {
+    margin-top: var(--space-l);
+  }
+
+  /* 7. Contact */
+  .contact .lede {
+    max-width: 46rem;
+  }
+</style>

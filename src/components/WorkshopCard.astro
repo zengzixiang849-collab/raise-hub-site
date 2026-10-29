@@ -1,0 +1,77 @@
+---
+import type { CollectionEntry } from 'astro:content';
+import { url } from '../lib/url';
+
+interface Props {
+  workshop: CollectionEntry<'workshops'>;
+  /** Heading level for the card title (default h3). */
+  headingLevel?: 'h2' | 'h3';
+}
+const { workshop, headingLevel = 'h3' } = Astro.props;
+const { data, id } = workshop;
+const Heading = headingLevel;
+const sessions = data.sessions?.length;
+---
+<article class="workshop-card" data-audience={data.audience}>
+  <p class="workshop-card__meta">
+    <span class="badge">{data.audience}</span>
+    {sessions && <span class="workshop-card__sessions">{sessions} sessions</span>}
+  </p>
+  <Heading class="workshop-card__title">
+    <a href={url(`/workshops/${id}/`)}>{data.title}</a>
+  </Heading>
+  <p class="workshop-card__summary">{data.summary}</p>
+  <ul class="chips" aria-label="Session format">
+    {data.formats.map((f) => <li>{f}</li>)}
+  </ul>
+</article>
+
+<style>
+  .workshop-card {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: var(--space-m);
+    transition: border-color 150ms ease, box-shadow 150ms ease;
+  }
+  .workshop-card:hover,
+  .workshop-card:focus-within {
+    border-color: var(--maroon);
+    box-shadow: 0 2px 10px rgba(38, 38, 38, 0.08);
+  }
+  .workshop-card__meta {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--space-xs);
+    margin: 0 0 var(--space-xs);
+    font-size: var(--step--1);
+  }
+  .workshop-card__sessions {
+    color: var(--gray);
+    font-weight: 700;
+  }
+  .workshop-card__title {
+    font-size: var(--step-1);
+    margin-bottom: var(--space-xs);
+  }
+  .workshop-card__title a {
+    text-decoration: none;
+  }
+  /* Whole card clickable, link text stays the accessible name */
+  .workshop-card__title a::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+  }
+  .workshop-card__title a:hover {
+    text-decoration: underline;
+  }
+  .workshop-card__summary {
+    flex: 1;
+    margin-bottom: var(--space-s);
+  }
+</style>

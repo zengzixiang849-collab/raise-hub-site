@@ -1,0 +1,82 @@
+---
+// Renders the five dimensions with their exact wording.
+// variant "dark": for maroon sections (gold names on maroon, white questions).
+// variant "light": for white / off-white sections.
+import { DIMENSIONS } from '../lib/dimensions';
+
+interface Props {
+  variant?: 'dark' | 'light';
+}
+const { variant = 'light' } = Astro.props;
+---
+<ol class:list={['dimensions', `dimensions--${variant}`]}>
+  {DIMENSIONS.map((d, i) => (
+    <li class="dimension">
+      <span class="dimension__number" aria-hidden="true">{i + 1}</span>
+      <p class="dimension__text">
+        <strong class="dimension__name">{d.name}</strong>
+        <span class="visually-hidden"> — </span>
+        <span class="dimension__question">{d.question}</span>
+      </p>
+    </li>
+  ))}
+</ol>
+
+<style>
+  .dimensions {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    gap: var(--space-s);
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 13rem), 1fr));
+  }
+  .dimension {
+    margin: 0;
+    padding: var(--space-m);
+    border-radius: var(--radius);
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-xs);
+  }
+  .dimension__number {
+    font-size: var(--step-2);
+    font-weight: 700;
+    line-height: 1;
+  }
+  .dimension__text {
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2xs);
+  }
+  .dimension__name {
+    font-size: var(--step-1);
+    line-height: 1.25;
+  }
+
+  /* Light: white cards on off-white or white sections */
+  .dimensions--light .dimension {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-top: 6px solid var(--maroon);
+  }
+  .dimensions--light .dimension__number,
+  .dimensions--light .dimension__name {
+    color: var(--maroon);
+  }
+
+  /* Dark: on a maroon band. The card background darkens maroon so gold text
+     reaches 5.3:1 (gold directly on maroon is only 4.3:1). */
+  .dimensions--dark .dimension {
+    background: rgba(0, 0, 0, 0.18);
+    border-top: 6px solid var(--gold);
+  }
+  .dimensions--dark .dimension__number,
+  .dimensions--dark .dimension__name {
+    color: var(--gold);
+  }
+  .dimensions--dark .dimension__question {
+    color: var(--white);
+  }
+</style>

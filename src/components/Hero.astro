@@ -1,0 +1,134 @@
+---
+// Homepage hero. The H1 is the primary logo, whose wordmark already contains
+// the tagline "Responsible AI for Teaching and Learning" (alt text carries it),
+// so the tagline is not printed twice. Copy: homepage-about-draft.md HOME §1.
+import { url } from '../lib/url';
+---
+<section class="hero">
+  <div class="container hero__grid">
+    <div class="hero__text">
+      <h1 class="hero__title">
+        <img
+          src={url('/brand/raise_hub_teaching_learning.png')}
+          alt="RAISE Hub — Responsible AI for Teaching and Learning"
+          width="440"
+          height="149"
+          fetchpriority="high"
+        />
+      </h1>
+      <p class="hero__lede">
+        Based at the HNU–ASU Joint International College (HAIC), RAISE Hub helps faculty, students and
+        teaching assistants use AI thoughtfully to address real teaching and learning needs. We develop
+        useful, reusable tools — and the human judgment needed to use them responsibly.
+      </p>
+      <div class="hero__actions">
+        <a class="button button--primary" href={url('/workshops/')}>Explore workshops</a>
+        <a class="button button--secondary" href="#how-we-work">How we work</a>
+      </div>
+    </div>
+
+    <div class="hero__panel" aria-hidden="true">
+      <ul>
+        <li>Build</li>
+        <li>Evaluate</li>
+        <li>Improve</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<style>
+  .hero {
+    padding-block: var(--space-xl) var(--space-2xl);
+    background:
+      linear-gradient(180deg, var(--surface) 0%, var(--surface) 60%, var(--surface-alt) 100%);
+  }
+  .hero__grid {
+    display: grid;
+    gap: var(--space-xl);
+    align-items: center;
+  }
+  @media (min-width: 56rem) {
+    .hero__grid {
+      grid-template-columns: 1.35fr 1fr;
+    }
+  }
+  .hero__title {
+    margin: 0 0 var(--space-m);
+  }
+  .hero__title img {
+    width: min(100%, 440px);
+    height: auto;
+    /* the PNG has transparent padding on the left; align the letters with the text */
+    margin-left: -4.5%;
+  }
+  .hero__lede {
+    font-size: var(--step-1);
+    line-height: 1.55;
+    margin-bottom: var(--space-l);
+  }
+  .hero__actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-s);
+  }
+
+  /* Decorative panel: maroon block, white words, large gold squares (allowed:
+     large decorative blocks; gold is not used as text on light). */
+  .hero__panel {
+    background: var(--maroon);
+    border-radius: var(--radius);
+    padding: var(--space-xl) var(--space-l);
+    box-shadow: 0 18px 40px -24px rgba(140, 29, 64, 0.55);
+    position: relative;
+    overflow: hidden;
+  }
+  .hero__panel::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    height: 12px;
+    background: var(--gold);
+  }
+  .hero__panel ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    gap: var(--space-m);
+  }
+  .hero__panel li {
+    margin: 0;
+    display: flex;
+    align-items: center;
+    gap: var(--space-m);
+    color: var(--white);
+    font-size: var(--step-3);
+    font-weight: 700;
+    line-height: 1;
+  }
+  .hero__panel li::before {
+    content: '';
+    width: 0.8em;
+    height: 0.8em;
+    flex-shrink: 0;
+    background: var(--gold);
+    border-radius: 3px;
+  }
+  .hero__panel li:nth-child(2) {
+    padding-left: 1.2em;
+  }
+  .hero__panel li:nth-child(3) {
+    padding-left: 2.4em;
+  }
+  @media (max-width: 55.99rem) {
+    .hero__panel {
+      padding: var(--space-l);
+    }
+    .hero__panel li {
+      font-size: var(--step-2);
+    }
+  }
+</style>
