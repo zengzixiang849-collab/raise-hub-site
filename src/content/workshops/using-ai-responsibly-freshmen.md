@@ -10,7 +10,7 @@ keyIdeas:
   - "Keep the thinking you need to learn. Ask whether this part is meant to teach you, and whether you will need to do it yourself later."
   - "Check any AI answer in four steps: stop, judge the source, get the original, compare. A second AI agreeing is not a check."
   - "A correct fact can lead to an unsupported conclusion. Check more carefully when a mistake could affect your learning, an important opportunity or other people."
-practise: "Fictional library-study and scholarship examples, and bilingual (English/Chinese) commitment sentences."
+practise: "Fictional library-study and scholarship examples; bilingual (English/Chinese) commitment sentences."
 leaveWith: "A commitment for one real assignment: what AI could help with, what you will do yourself, and how you will check."
 relatedProjects: []
 relatedResources: [decide, check]

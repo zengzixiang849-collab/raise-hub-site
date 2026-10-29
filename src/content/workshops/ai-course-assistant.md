@@ -10,7 +10,7 @@ keyIdeas:
   - "Why test: hallucination, bias, sycophancy and inconsistency, each with a course example."
   - "A factual score alone does not establish instruction-following. Retest with the same question in a fresh conversation."
   - "Five checks before sharing: defined scope, permitted sources, tested behaviour, student guidance, faculty owner."
-practise: "Build a “Course Guide and Draft Feedback” assistant on a fictional syllabus, rubric and drafts (Riverton permit-service memo), then embed it in Canvas and check student access."
+practise: "Build “Course Guide and Draft Feedback” on a fictional syllabus, rubric and drafts (Riverton permit-service memo), then embed it in Canvas and check student access."
 leaveWith: "A checklist to adapt the example to your own course."
 relatedProjects: [course-guide-draft-feedback]
 relatedResources: [before-sharing]

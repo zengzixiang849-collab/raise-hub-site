@@ -210,7 +210,9 @@ strong {
 
 .skip-link:focus {
   top: var(--space-s);
-  outline: 3px solid var(--gold);
+  /* near-black ring on the white page (15:1); gold would be a thin line on
+     light (2.07:1) — not allowed by the brand rules or WCAG 1.4.11 */
+  outline: 3px solid var(--ink);
   outline-offset: 2px;
 }
 

@@ -24,7 +24,7 @@ sessions:
       - "A deliberately bounded, fictional request: a one-page study guide and six practice questions from one approved source."
       - "System instructions persist; prompts ask. Knowledge supplies evidence; instructions define behaviour (retrieval-augmented generation)."
       - "Retrieved material can support an answer; it does not guarantee correctness."
-      - "Turn a narrow build into a reusable pattern: stable instructions plus a course-specific Faculty Instruction File. Reusable means adaptable, not universally validated."
+      - "Turn a narrow build into a reusable pattern: stable instructions plus a course-specific Faculty Instruction File. “Reusable means adaptable, not universally validated.”"
     leaveWith: "A private draft bot, reusable instructions, a Faculty Instruction File and first-look notes for Session 3."
   - number: 3
     title: "Test It Before Faculty Use It"

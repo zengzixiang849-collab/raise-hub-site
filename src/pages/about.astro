@@ -134,24 +134,18 @@ const WORDS = ['Responsible', 'AI', 'Support', 'in', 'Education'];
           <h2 id="decides-heading">Who decides what</h2>
           <p class="lead-in">AI should support learning and professional judgment, not replace it.</p>
           <div class="roles">
-            <article class="role">
-              <h3>Students</h3>
-              <p>
-                Still need to develop the underlying knowledge and skills, and they remain responsible for
-                their work, with or without AI.
-              </p>
-            </article>
-            <article class="role">
-              <h3>Faculty</h3>
-              <p>
-                Retain academic and release decisions: what a tool may do, which sources it uses, who can
-                access it and whether it is released at all.
-              </p>
-            </article>
-            <article class="role">
-              <h3>Teaching assistants</h3>
-              <p>Prepare, test, document and report, then hand the evidence to faculty.</p>
-            </article>
+            <p class="role">
+              <strong>Students</strong> still need to develop the underlying knowledge and skills, and they
+              remain responsible for their work, with or without AI.
+            </p>
+            <p class="role">
+              <strong>Faculty</strong> retain academic and release decisions: what a tool may do, which sources it
+              uses, who can access it and whether it is released at all.
+            </p>
+            <p class="role">
+              <strong>Teaching assistants</strong> prepare, test, document and report, then hand the evidence to
+              faculty.
+            </p>
           </div>
         </section>
 
@@ -363,17 +357,17 @@ const WORDS = ['Responsible', 'AI', 'Support', 'in', 'Education'];
     grid-template-columns: repeat(auto-fit, minmax(min(100%, 13rem), 1fr));
   }
   .role {
+    margin: 0;
     border: 1px solid var(--border);
     border-left: 6px solid var(--maroon);
     border-radius: var(--radius);
     padding: var(--space-m);
   }
-  .role h3 {
+  .role strong {
+    display: block;
+    color: var(--maroon);
     font-size: var(--step-1);
-    margin-bottom: var(--space-xs);
-  }
-  .role p {
-    margin: 0;
+    margin-bottom: var(--space-2xs);
   }
 
   .principles__heading {

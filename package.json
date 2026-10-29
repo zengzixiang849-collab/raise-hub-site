@@ -11,7 +11,8 @@
     "check": "astro check",
     "check:links": "node scripts/check-links.mjs",
     "check:content": "node scripts/check-content.mjs",
-    "verify": "astro check && astro build && node scripts/check-links.mjs && node scripts/check-content.mjs",
+    "test:js": "node scripts/test-interactive.mjs",
+    "verify": "astro check && astro build && node scripts/check-links.mjs && node scripts/check-content.mjs && node scripts/test-interactive.mjs",
     "astro": "astro"
   },
   "dependencies": {
