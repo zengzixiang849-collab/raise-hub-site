@@ -1,0 +1,22 @@
+# dependencies and build output
+node_modules/
+dist/
+.astro/
+.npm-cache/
+
+# environment / secrets
+.env
+.env.*
+
+# raw materials must never enter this repository
+*.zip
+*.HEIC
+*.heic
+raw-photos/
+
+# editor / OS
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+npm-debug.log*
