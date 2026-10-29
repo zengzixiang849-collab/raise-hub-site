@@ -8,30 +8,31 @@ import { frontmatterLoader } from './lib/frontmatter-loader';
 const format = z.enum(['Observe', 'Define', 'Build', 'Test and revise']);
 const audience = z.enum(['Faculty', 'Students', 'Freshmen', 'Teaching assistants']);
 const review = z.enum(['draft', 'approved']).default('draft');
+const text = z.string().trim().min(1, 'must not be empty');
 
 const workshops = defineCollection({
   // Files starting with "_" (e.g. _template.md) are ignored.
   loader: frontmatterLoader('src/content/workshops'),
   schema: z.object({
-    title: z.string(), // exactly as in START_HERE.md
+    title: text, // exactly as in START_HERE.md
     order: z.number(),
     audience,
     status: z.enum(['delivered', 'upcoming']),
     date: z.string().optional(), // only when confirmed by Annus
-    formats: z.array(format),
-    summary: z.string(),
-    keyIdeas: z.array(z.string()).default([]),
-    practise: z.string().optional(),
-    leaveWith: z.string().optional(),
-    seriesPurpose: z.string().optional(),
+    formats: z.array(format).min(1),
+    summary: text,
+    keyIdeas: z.array(text).default([]),
+    practise: text.optional(),
+    leaveWith: text.optional(),
+    seriesPurpose: text.optional(),
     sessions: z
       .array(
         z.object({
           number: z.number(),
-          title: z.string(),
-          formats: z.array(format),
-          keyIdeas: z.array(z.string()),
-          leaveWith: z.string(),
+          title: text,
+          formats: z.array(format).min(1),
+          keyIdeas: z.array(text),
+          leaveWith: text,
         }),
       )
       .optional(),
@@ -46,25 +47,29 @@ const workshops = defineCollection({
 const projects = defineCollection({
   loader: frontmatterLoader('src/content/projects'),
   schema: z.object({
-    title: z.string(),
+    title: text,
     order: z.number(),
-    need: z.string(),
-    intendedUsers: z.string(),
-    whatWasBuilt: z.string(),
-    howTested: z.string(),
-    limitations: z.string(),
-    status: z.string(),
+    need: text,
+    intendedUsers: text,
+    whatWasBuilt: text,
+    howTested: text,
+    limitations: text,
+    // CLAUDE.md §3.4: every project status must say "not deployed".
+    status: text.refine((s) => /\bnot deployed\b/.test(s), {
+      message: 'status must state "not deployed" (CLAUDE.md §3.4)',
+    }),
+    // Shown only when reviewStatus is "approved"; otherwise "Evaluation review pending".
     evaluation: z
       .object({
-        accuracy: z.string(),
-        biasFairness: z.string(),
-        limitsUncertainty: z.string(),
-        powerPublicValue: z.string(),
-        responsibleUseDecision: z.string(),
-        reviewedBy: z.string(),
-        reviewedOn: z.string(),
+        accuracy: text,
+        biasFairness: text,
+        limitsUncertainty: text,
+        powerPublicValue: text,
+        responsibleUseDecision: text,
+        reviewedBy: text,
+        reviewedOn: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, 'reviewedOn must be a date like 2026-11-02'),
       })
-      .optional(), // omitted → "Evaluation review pending"
+      .optional(),
     relatedWorkshops: z.array(z.string()).default([]),
     reviewNotes: z.array(z.string()).default([]), // rendered as ReviewPending
     reviewStatus: review,

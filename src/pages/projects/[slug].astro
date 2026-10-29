@@ -7,6 +7,7 @@ import BaseLayout from '../../layouts/BaseLayout.astro';
 import ReviewPending from '../../components/ReviewPending.astro';
 import { DIMENSIONS } from '../../lib/dimensions';
 import { url } from '../../lib/url';
+import { resolveRefs } from '../../lib/refs';
 
 export async function getStaticPaths() {
   const projects = await getCollection('projects');
@@ -28,20 +29,26 @@ const FIELDS = [
   { id: 'status', label: 'Current status', text: data.status },
 ];
 
-const evaluation = data.evaluation
-  ? [
-      data.evaluation.accuracy,
-      data.evaluation.biasFairness,
-      data.evaluation.limitsUncertainty,
-      data.evaluation.powerPublicValue,
-      data.evaluation.responsibleUseDecision,
-    ]
-  : null;
+// An evaluation is shown only when it is filled in AND the project is approved
+// ("A tool and its reviewed evaluation belong together"); otherwise: pending.
+const evaluation =
+  data.evaluation && data.reviewStatus === 'approved'
+    ? [
+        data.evaluation.accuracy,
+        data.evaluation.biasFairness,
+        data.evaluation.limitsUncertainty,
+        data.evaluation.powerPublicValue,
+        data.evaluation.responsibleUseDecision,
+      ]
+    : null;
 
-const workshops = await getCollection('workshops');
-const related = data.relatedWorkshops
-  .map((slug) => workshops.find((w) => w.id === slug))
-  .filter((w): w is CollectionEntry<'workshops'> => Boolean(w));
+// Related workshops — an unknown id fails the build with the file and field.
+const related = resolveRefs(
+  data.relatedWorkshops,
+  await getCollection('workshops'),
+  `src/content/projects/${project.id}.md`,
+  'relatedWorkshops',
+);
 
 const firstSentence = data.need.match(/^.*?[.!?](\s|$)/)?.[0].trim() ?? data.need;
 ---

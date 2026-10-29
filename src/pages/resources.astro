@@ -5,10 +5,13 @@ import { getCollection } from 'astro:content';
 import BaseLayout from '../layouts/BaseLayout.astro';
 import FiveDimensions from '../components/FiveDimensions.astro';
 import { RESOURCES } from '../lib/resources';
+import { resolveRefs } from '../lib/refs';
 import { url } from '../lib/url';
 
 const workshops = await getCollection('workshops');
-const titleOf = (id: string) => workshops.find((w) => w.id === id)?.data.title ?? id;
+// Validate every guide's source-workshop ids up front (typo → build error).
+for (const r of RESOURCES) resolveRefs(r.workshops, workshops, 'src/lib/resources.ts', `RESOURCES["${r.id}"].workshops`);
+const titleOf = (id: string) => resolveRefs([id], workshops, 'src/pages/resources.astro', 'workshop link')[0].data.title;
 const sourcesFor = (id: string) =>
   (RESOURCES.find((r) => r.id === id)?.workshops ?? []).map((w) => ({ href: url(`/workshops/${w}/`), title: titleOf(w) }));
 ---
@@ -36,7 +39,7 @@ const sourcesFor = (id: string) =>
       <!-- 1. Decide what to hand AI -->
       <section class="guide" id="decide" aria-labelledby="decide-heading">
         <h2 id="decide-heading">Decide what to hand AI</h2>
-        <p>Course rules come first. Then ask two questions about each part of the work.</p>
+        <p>Course rules come first.</p>
         <ol class="flow">
           <li class="flow__step">
             <p class="flow__q"><span class="flow__n" aria-hidden="true">1</span>Do your course rules allow AI here?</p>
@@ -413,6 +416,9 @@ const sourcesFor = (id: string) =>
   }
   .ext-links li {
     margin: 0;
+  }
+  .ext-links a {
+    overflow-wrap: anywhere; /* long URLs must not overflow at 320px / 400% zoom */
   }
   .downloads-note {
     margin-top: var(--space-xl);

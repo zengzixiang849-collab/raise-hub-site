@@ -19,7 +19,10 @@ const FRONTMATTER = /^---\r?\n([\s\S]*?)\r?\n---\s*(?:\r?\n|$)/;
 export function frontmatterLoader(dir: string) {
   return async () => {
     const abs = join(process.cwd(), dir);
-    if (!existsSync(abs)) return [];
+    // Fail loudly: a renamed or missing folder must not produce an empty site.
+    if (!existsSync(abs)) {
+      throw new Error(`Content folder not found: ${dir} (expected at ${abs}). Was it renamed or deleted?`);
+    }
 
     return readdirSync(abs)
       .filter((file) => file.endsWith('.md') && !file.startsWith('_'))

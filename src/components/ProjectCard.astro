@@ -20,7 +20,7 @@ const firstSentence = data.need.match(/^.*?[.!?](\s|$)/)?.[0].trim() ?? data.nee
     {data.status}
   </p>
   <p class="project-card__eval">
-    {data.evaluation ? 'Evaluation reviewed' : 'Evaluation review pending'}
+    {data.evaluation && data.reviewStatus === 'approved' ? 'Evaluation reviewed' : 'Evaluation review pending'}
   </p>
 </article>
 

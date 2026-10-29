@@ -5,6 +5,10 @@ import Header from '../components/Header.astro';
 import Footer from '../components/Footer.astro';
 import { IS_DRAFT, SITE } from '../lib/site';
 import { url } from '../lib/url';
+import { assertReleasable } from '../lib/release-gate';
+
+// Public builds fail while any content is unapproved (no-op in draft mode).
+await assertReleasable();
 
 interface Props {
   /** Page title without the site name, e.g. "About RAISE". Omit on the homepage. */

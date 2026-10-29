@@ -122,12 +122,10 @@ const WORDS = ['Responsible', 'AI', 'Support', 'in', 'Education'];
           <p>
             The full sequence connects those stages. The three-session TSA series follows it from start to
             finish:
+            <em class="series"><a href={url('/workshops/tsa-series/#session-1')}>Know What to Hand AI</a> →
+            <a href={url('/workshops/tsa-series/#session-2')}>Build an AI Course Helper</a> →
+            <a href={url('/workshops/tsa-series/#session-3')}>Test It Before Faculty Use It</a>.</em>
           </p>
-          <ol class="series">
-            <li><a href={url('/workshops/tsa-series/#session-1')}>Know What to Hand AI</a></li>
-            <li><a href={url('/workshops/tsa-series/#session-2')}>Build an AI Course Helper</a></li>
-            <li><a href={url('/workshops/tsa-series/#session-3')}>Test It Before Faculty Use It</a></li>
-          </ol>
         </section>
 
         <section id="who-decides" aria-labelledby="decides-heading">
@@ -311,38 +309,6 @@ const WORDS = ['Responsible', 'AI', 'Support', 'in', 'Education'];
   }
   .modes {
     padding-left: 1.2rem;
-  }
-  .series {
-    display: flex;
-    flex-wrap: wrap;
-    gap: var(--space-xs);
-    list-style: none;
-    padding: 0;
-    counter-reset: s;
-  }
-  .series li {
-    margin: 0;
-    counter-increment: s;
-    display: flex;
-    align-items: center;
-    gap: var(--space-xs);
-  }
-  .series li::before {
-    content: counter(s);
-    display: inline-grid;
-    place-items: center;
-    width: 1.6rem;
-    height: 1.6rem;
-    border-radius: 50%;
-    background: var(--maroon);
-    color: var(--white);
-    font-size: var(--step--1);
-    font-weight: 700;
-  }
-  .series li:not(:last-child)::after {
-    content: '→';
-    color: var(--gray);
-    margin-left: var(--space-xs);
   }
   .series a {
     font-weight: 700;

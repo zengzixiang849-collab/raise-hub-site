@@ -2,7 +2,8 @@
 import { getCollection, type CollectionEntry } from 'astro:content';
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import { url } from '../../lib/url';
-import { resourceById } from '../../lib/resources';
+import { RESOURCES } from '../../lib/resources';
+import { resolveRefs } from '../../lib/refs';
 
 export async function getStaticPaths() {
   const workshops = await getCollection('workshops');
@@ -15,16 +16,10 @@ interface Props {
 const { workshop } = Astro.props;
 const { data } = workshop;
 
-// Related projects (linked only if the project exists).
-const projects = await getCollection('projects');
-const related = data.relatedProjects
-  .map((slug) => projects.find((p) => p.id === slug))
-  .filter((p): p is CollectionEntry<'projects'> => Boolean(p));
-
-// Related resource guides on /resources/ (unknown ids are skipped).
-const resources = data.relatedResources
-  .map((id) => resourceById(id))
-  .filter((r): r is NonNullable<ReturnType<typeof resourceById>> => Boolean(r));
+// Related projects and resource guides — an unknown id fails the build with the file and field.
+const file = `src/content/workshops/${workshop.id}.md`;
+const related = resolveRefs(data.relatedProjects, await getCollection('projects'), file, 'relatedProjects');
+const resources = resolveRefs(data.relatedResources, RESOURCES, file, 'relatedResources');
 ---
 <BaseLayout title={data.title} description={data.summary}>
   <article>

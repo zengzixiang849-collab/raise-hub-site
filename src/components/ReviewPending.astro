@@ -1,6 +1,8 @@
 ---
-// Shows an open question for Annus. Visible only in draft mode, so it can
-// never appear on the approved public site.
+// Shows an open question for Annus. Visible in draft mode. In a public build
+// (PUBLIC_DRAFT=false) an open item BLOCKS the build — the decision must be
+// made and this component removed first, so unresolved content can never be
+// published silently (Codex review, 29 Oct).
 import { IS_DRAFT } from '../lib/site';
 
 interface Props {
@@ -10,6 +12,12 @@ interface Props {
   item?: string;
 }
 const { note, item } = Astro.props;
+if (!IS_DRAFT) {
+  throw new Error(
+    `Public build blocked (PUBLIC_DRAFT=false): open review item ${item ?? ''} on ${Astro.url.pathname} — "${note ?? ''}". ` +
+      'Record Annus\'s decision in planning/review-checklist.md, apply it, and remove this ReviewPending.',
+  );
+}
 ---
 {IS_DRAFT && (
   <aside class="review-pending" aria-label="Review pending">
