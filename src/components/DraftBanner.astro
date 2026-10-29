@@ -1,0 +1,29 @@
+---
+import { IS_DRAFT } from '../lib/site';
+---
+{IS_DRAFT && (
+  <div class="draft-banner" role="note">
+    <div class="container draft-banner__inner">
+      <strong class="draft-banner__label">Draft for review — not published.</strong>
+      <span>Content is pending approval.</span>
+    </div>
+  </div>
+)}
+
+<style>
+  .draft-banner {
+    background: var(--dark);
+    color: var(--white);
+    font-size: var(--step--1);
+  }
+  .draft-banner__inner {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.25rem 0.6rem;
+    padding-block: 0.45rem;
+  }
+  /* Gold text is allowed on dark backgrounds (8.43:1). */
+  .draft-banner__label {
+    color: var(--gold);
+  }
+</style>

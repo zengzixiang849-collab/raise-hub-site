@@ -1,0 +1,89 @@
+---
+import { NAV } from '../lib/site';
+import { stripBase, url } from '../lib/url';
+
+const path = stripBase(Astro.url.pathname);
+const isCurrent = (href: string) => (href === '/' ? path === '/' : path.startsWith(href));
+---
+<header class="site-header">
+  <div class="container site-header__inner">
+    <a class="site-header__logo" href={url('/')}>
+      <!-- Compact (no-tagline) logo: brand rule for widths under ~200px. -->
+      <img
+        src={url('/brand/raise_hub_no_tagline.png')}
+        alt="RAISE Hub — home"
+        width="176"
+        height="45"
+      />
+    </a>
+    <nav class="site-nav" aria-label="Main">
+      <ul>
+        {NAV.map((item) => (
+          <li>
+            <a href={url(item.href)} aria-current={isCurrent(item.href) ? 'page' : undefined}>
+              {item.label}
+            </a>
+          </li>
+        ))}
+      </ul>
+    </nav>
+  </div>
+</header>
+
+<style>
+  .site-header {
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+  }
+  .site-header__inner {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-s) var(--space-l);
+    padding-block: var(--space-s);
+  }
+  .site-header__logo {
+    display: inline-block;
+    flex-shrink: 0;
+  }
+  .site-header__logo img {
+    width: 176px;
+    height: auto;
+  }
+  .site-nav ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.15rem 0.35rem;
+  }
+  .site-nav li + li {
+    margin-top: 0;
+  }
+  .site-nav a {
+    display: inline-block;
+    padding: 0.45rem 0.65rem;
+    font-weight: 700;
+    color: var(--ink);
+    text-decoration: none;
+    border-bottom: 3px solid transparent;
+  }
+  .site-nav a:hover {
+    color: var(--maroon);
+    border-bottom-color: var(--border);
+  }
+  .site-nav a[aria-current='page'] {
+    color: var(--maroon);
+    border-bottom-color: var(--maroon);
+  }
+  @media (max-width: 40rem) {
+    .site-nav {
+      width: 100%;
+    }
+    .site-nav ul {
+      margin-inline: -0.65rem;
+    }
+  }
+</style>

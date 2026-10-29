@@ -1,0 +1,38 @@
+---
+// Shows an open question for Annus. Visible only in draft mode, so it can
+// never appear on the approved public site.
+import { IS_DRAFT } from '../lib/site';
+
+interface Props {
+  /** Short description of what needs Annus's decision. */
+  note?: string;
+  /** Optional checklist reference, e.g. "A5" (planning/review-checklist.md). */
+  item?: string;
+}
+const { note, item } = Astro.props;
+---
+{IS_DRAFT && (
+  <aside class="review-pending" aria-label="Review pending">
+    <span class="review-pending__label">Review pending{item ? ` · ${item}` : ''}:</span>
+    {note && <span> {note}</span>}
+    <slot />
+  </aside>
+)}
+
+<style>
+  .review-pending {
+    border: 2px dashed #b8b2a7;
+    border-radius: var(--radius);
+    background: #fbfaf8;
+    color: var(--gray);
+    font-size: var(--step--1);
+    line-height: 1.5;
+    padding: 0.55rem 0.8rem;
+    margin: var(--space-s) 0;
+    max-width: var(--text-max);
+  }
+  .review-pending__label {
+    font-weight: 700;
+    color: var(--ink);
+  }
+</style>

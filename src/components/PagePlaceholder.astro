@@ -1,0 +1,14 @@
+---
+// Temporary page body used until the real page is built (P2–P6).
+interface Props {
+  heading: string;
+  step: string;
+}
+const { heading, step } = Astro.props;
+---
+<section class="section">
+  <div class="container">
+    <h1>{heading}</h1>
+    <p class="placeholder">This page is under construction (build step {step}).</p>
+  </div>
+</section>
