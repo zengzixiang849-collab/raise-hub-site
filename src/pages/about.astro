@@ -1,10 +1,397 @@
 ---
-// P1 placeholder — replaced in P3.
+// About page. Copy: planning/homepage-about-draft.md, ABOUT section (used as written).
 import BaseLayout from '../layouts/BaseLayout.astro';
-import PagePlaceholder from '../components/PagePlaceholder.astro';
+import FiveDimensions from '../components/FiveDimensions.astro';
+import ReviewPending from '../components/ReviewPending.astro';
+import { SITE } from '../lib/site';
+import { url } from '../lib/url';
+
+const TOC = [
+  { id: 'what-raise-is', label: 'What RAISE is' },
+  { id: 'why', label: 'Why it exists' },
+  { id: 'philosophy', label: 'Learning by doing' },
+  { id: 'workshops-and-projects', label: 'Workshops and project work' },
+  { id: 'who-decides', label: 'Who decides what' },
+  { id: 'responsible', label: 'What “responsible” means' },
+  { id: 'how-we-test', label: 'How we test a tool' },
+  { id: 'contact', label: 'Get in touch' },
+];
+
+// Acronym (Brand Guide §1): letters R-A-I-S-E, with the "AI" raised in gold as in
+// the wordmark; the expansion is shown below in reading order.
+const ACRONYM = [
+  { letter: 'R' },
+  { letter: 'A', ai: true },
+  { letter: 'I', ai: true },
+  { letter: 'S' },
+  { letter: 'E' },
+];
+const WORDS = ['Responsible', 'AI', 'Support', 'in', 'Education'];
 ---
-<BaseLayout title="About RAISE" description="What RAISE Hub is, why it exists, how it works, and what responsible use of AI means to us.">
-  <PagePlaceholder heading="About RAISE Hub" step="P3" />
-  <!-- Temporary anchor so links to /about/#responsible resolve until P3. -->
-  <div id="responsible"></div>
+<BaseLayout
+  title="About RAISE"
+  description="What RAISE Hub is, why it exists, how it works, who decides what, and the five dimensions we use to evaluate every tool."
+>
+  <header class="section about-hero">
+    <div class="container">
+      <h1>About RAISE Hub</h1>
+      <div class="acronym" role="img" aria-label="RAISE stands for Responsible AI Support in Education">
+        <div class="acronym__letters" aria-hidden="true">
+          {ACRONYM.map((a) => <span class:list={['acronym__letter', { 'acronym__letter--ai': a.ai }]}>{a.letter}</span>)}
+        </div>
+        <p class="acronym__words" aria-hidden="true">
+          {WORDS.map((w) => <span>{w}</span>)}
+        </p>
+      </div>
+    </div>
+  </header>
+
+  <div class="section">
+    <div class="container about-layout">
+      <nav class="toc" aria-labelledby="toc-heading">
+        <h2 id="toc-heading" class="toc__heading">On this page</h2>
+        <ol>
+          {TOC.map((t) => <li><a href={`#${t.id}`}>{t.label}</a></li>)}
+        </ol>
+      </nav>
+
+      <div class="about-content">
+        <section id="what-raise-is" aria-labelledby="what-heading">
+          <h2 id="what-heading">What RAISE is</h2>
+          <p>
+            <strong>RAISE</strong> stands for <strong>Responsible AI Support in Education.</strong> Our tagline,
+            <em>Responsible AI for Teaching and Learning</em>, states what we do. “Support” in the name and
+            “teaching and learning” in the tagline both make the same point: the Hub serves faculty and
+            students alike.
+          </p>
+          <p>
+            RAISE Hub is based at the <strong>HNU–ASU Joint International College (HAIC)</strong>. It was
+            founded by <strong>Annus Azhar, Ph.D.</strong>, Assistant Teaching Professor in the School of Public
+            Affairs, Arizona State University.
+          </p>
+          <ReviewPending item="A3" note="Confirm the founder line and title wording." />
+        </section>
+
+        <section id="why" aria-labelledby="why-heading">
+          <h2 id="why-heading">Why it exists</h2>
+          <p>
+            The Hub helps faculty, students and teaching assistants use AI thoughtfully to address real
+            teaching and learning needs. Its purpose is to develop both <strong>useful, reusable tools</strong>
+            and <strong>the human judgment needed to use them responsibly</strong>.
+          </p>
+          <p>
+            We start with a need worth addressing, ask whether AI is appropriate, and consider who could
+            benefit or be affected. As tools and needs change, their outputs and suitability need to be
+            checked again.
+          </p>
+        </section>
+
+        <section id="philosophy" aria-labelledby="philosophy-heading">
+          <h2 id="philosophy-heading">Our philosophy: learning by doing</h2>
+          <p>Our central philosophy is <strong>learning by doing</strong>:</p>
+          <ol class="steps">
+            <li>Identify a real problem.</li>
+            <li>Build or adapt a small tool or workflow.</li>
+            <li>Evaluate it.</li>
+            <li>Reflect on the findings.</li>
+            <li>Improve it.</li>
+          </ol>
+          <p>
+            Our work draws on ASU's Principled Innovation (the need, values, people affected and possible
+            consequences, and whether a simpler approach would suffice) and on learning engineering (using
+            evidence from testing to refine the design).
+          </p>
+          <p>
+            Examples include course assistants, study-guide helpers, learning assistants and clearer teaching
+            materials. See <a href={url('/projects/')}><strong>Projects</strong></a>.
+          </p>
+        </section>
+
+        <section id="workshops-and-projects" aria-labelledby="wp-heading">
+          <h2 id="wp-heading">How workshops connect to project work</h2>
+          <p>
+            Workshops introduce these habits and provide a route into project work and support. Depending on
+            the session, participants may:
+          </p>
+          <ul class="modes">
+            <li><strong>observe</strong> a worked example,</li>
+            <li><strong>define</strong> a task,</li>
+            <li><strong>build</strong> something, or</li>
+            <li><strong>test and revise</strong> it.</li>
+          </ul>
+          <p>
+            The full sequence connects those stages. The three-session TSA series follows it from start to
+            finish:
+          </p>
+          <ol class="series">
+            <li><a href={url('/workshops/tsa-series/#session-1')}>Know What to Hand AI</a></li>
+            <li><a href={url('/workshops/tsa-series/#session-2')}>Build an AI Course Helper</a></li>
+            <li><a href={url('/workshops/tsa-series/#session-3')}>Test It Before Faculty Use It</a></li>
+          </ol>
+        </section>
+
+        <section id="who-decides" aria-labelledby="decides-heading">
+          <h2 id="decides-heading">Who decides what</h2>
+          <p class="lead-in">AI should support learning and professional judgment, not replace it.</p>
+          <div class="roles">
+            <article class="role">
+              <h3>Students</h3>
+              <p>
+                Still need to develop the underlying knowledge and skills, and they remain responsible for
+                their work, with or without AI.
+              </p>
+            </article>
+            <article class="role">
+              <h3>Faculty</h3>
+              <p>
+                Retain academic and release decisions: what a tool may do, which sources it uses, who can
+                access it and whether it is released at all.
+              </p>
+            </article>
+            <article class="role">
+              <h3>Teaching assistants</h3>
+              <p>Prepare, test, document and report, then hand the evidence to faculty.</p>
+            </article>
+          </div>
+        </section>
+
+        <section id="responsible" aria-labelledby="responsible-heading">
+          <h2 id="responsible-heading">What “responsible” means: our five evaluation dimensions</h2>
+          <p>Every RAISE tool is evaluated across five dimensions:</p>
+          <FiveDimensions variant="light" />
+
+          <h3 class="principles__heading">Three principles follow from them:</h3>
+          <ul class="principles">
+            <li>
+              <strong>A polished output or a high platform score alone is not enough.</strong>
+              A platform score can show that an answer matches an expected answer. It cannot show that the tool
+              follows its instructions, treats every user fairly, or should be released.
+            </li>
+            <li>
+              <strong>A tool and its reviewed evaluation belong together.</strong>
+              For a completed RAISE tool project, we publish neither without the other.
+            </li>
+            <li>
+              <strong>Testing leads to a defensible decision.</strong>
+              That decision may be to use the tool, to revise it, or not to use it at all.
+            </li>
+          </ul>
+        </section>
+
+        <section id="how-we-test" aria-labelledby="test-heading">
+          <h2 id="test-heading">How we test a tool</h2>
+          <ReviewPending
+            item="A4"
+            note="This section summarizes the internal “How are you testing it?” guidance. Include it publicly, shorten it, or remove it?"
+          />
+          <p>Before any tool is shown, we should be able to explain how we know it works:</p>
+          <ol class="test-steps">
+            <li>
+              <strong>Inputs.</strong> A test set of 10–20 cases, including at least one easy, one hard, one
+              edge and one known-failure case.
+            </li>
+            <li>
+              <strong>Scoring.</strong> Two to four named criteria (for example accuracy, instruction-following
+              and scope), each scored separately, with the person who judged named.
+            </li>
+            <li>
+              <strong>Failures.</strong> Each failure is logged, one change is made, and the same case is rerun.
+              Both runs are kept.
+            </li>
+          </ol>
+        </section>
+
+        <section id="contact" aria-labelledby="contact-heading">
+          <h2 id="contact-heading">Get in touch</h2>
+          <p>
+            Contact Annus Azhar, Ph.D., at
+            <a href={`mailto:${SITE.contactEmail}`}><strong>{SITE.contactEmail}</strong></a>.
+          </p>
+          <ReviewPending item="A5" note="Same as the homepage contact: confirm this email may appear publicly." />
+        </section>
+      </div>
+    </div>
+  </div>
 </BaseLayout>
+
+<style>
+  /* Header with acronym */
+  .about-hero {
+    background: var(--surface-alt);
+    border-bottom: 1px solid var(--border);
+  }
+  .acronym {
+    margin-top: var(--space-m);
+    display: inline-block;
+  }
+  .acronym__letters {
+    display: flex;
+    gap: var(--space-xs);
+  }
+  .acronym__letter {
+    display: inline-grid;
+    place-items: center;
+    width: clamp(2.6rem, 9vw, 3.5rem);
+    height: clamp(2.6rem, 9vw, 3.5rem);
+    border-radius: var(--radius);
+    background: var(--maroon);
+    color: var(--white);
+    font-size: clamp(1.5rem, 5vw, 2rem);
+    font-weight: 700;
+  }
+  /* The raised AI: gold letters on a darker tile, lifted like the wordmark.
+     Large bold text: gold on this tile is 5.3:1. */
+  .acronym__letter--ai {
+    background: #731834;
+    color: var(--gold);
+    transform: translateY(-0.4rem);
+  }
+  .acronym__words {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0 0.4em;
+    margin: var(--space-s) 0 0;
+    font-size: var(--step-1);
+    font-weight: 700;
+    color: var(--maroon);
+  }
+
+  /* Two-column layout with sticky table of contents */
+  .about-layout {
+    display: grid;
+    gap: var(--space-l);
+  }
+  @media (min-width: 60rem) {
+    .about-layout {
+      grid-template-columns: 15rem 1fr;
+      gap: var(--space-xl);
+      align-items: start;
+    }
+    .toc {
+      position: sticky;
+      top: var(--space-m);
+    }
+  }
+  .toc {
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: var(--space-m);
+    background: var(--surface);
+    font-size: var(--step--1);
+  }
+  .toc__heading {
+    font-size: var(--step-0);
+    margin-bottom: var(--space-xs);
+    color: var(--ink);
+  }
+  .toc ol {
+    margin: 0;
+    padding-left: 1.2rem;
+  }
+  .toc a {
+    text-decoration: none;
+  }
+  .toc a:hover {
+    text-decoration: underline;
+  }
+
+  .about-content {
+    min-width: 0;
+    max-width: 50rem;
+  }
+  .about-content > section + section {
+    margin-top: var(--space-xl);
+    padding-top: var(--space-xl);
+    border-top: 1px solid var(--border);
+  }
+  .about-content h2 {
+    font-size: var(--step-3);
+  }
+
+  .steps,
+  .test-steps {
+    padding-left: 1.4rem;
+  }
+  .modes {
+    padding-left: 1.2rem;
+  }
+  .series {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-xs);
+    list-style: none;
+    padding: 0;
+    counter-reset: s;
+  }
+  .series li {
+    margin: 0;
+    counter-increment: s;
+    display: flex;
+    align-items: center;
+    gap: var(--space-xs);
+  }
+  .series li::before {
+    content: counter(s);
+    display: inline-grid;
+    place-items: center;
+    width: 1.6rem;
+    height: 1.6rem;
+    border-radius: 50%;
+    background: var(--maroon);
+    color: var(--white);
+    font-size: var(--step--1);
+    font-weight: 700;
+  }
+  .series li:not(:last-child)::after {
+    content: '→';
+    color: var(--gray);
+    margin-left: var(--space-xs);
+  }
+  .series a {
+    font-weight: 700;
+  }
+
+  .lead-in {
+    font-size: var(--step-1);
+  }
+  .roles {
+    display: grid;
+    gap: var(--space-s);
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 13rem), 1fr));
+  }
+  .role {
+    border: 1px solid var(--border);
+    border-left: 6px solid var(--maroon);
+    border-radius: var(--radius);
+    padding: var(--space-m);
+  }
+  .role h3 {
+    font-size: var(--step-1);
+    margin-bottom: var(--space-xs);
+  }
+  .role p {
+    margin: 0;
+  }
+
+  .principles__heading {
+    font-size: var(--step-1);
+    margin-top: var(--space-l);
+  }
+  .principles {
+    list-style: none;
+    padding: 0;
+    display: grid;
+    gap: var(--space-s);
+  }
+  .principles li {
+    margin: 0;
+    padding: var(--space-m);
+    background: var(--surface-alt);
+    border-radius: var(--radius);
+  }
+  .principles strong {
+    display: block;
+    color: var(--maroon);
+    margin-bottom: var(--space-2xs);
+  }
+</style>
