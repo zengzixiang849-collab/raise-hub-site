@@ -1,8 +1,425 @@
 ---
-// P1 placeholder — replaced in P6.
+// Resources: on-page guides condensed from delivered workshops (no downloads in v1).
+// Copy: planning/content-inventory.md §C.
+import { getCollection } from 'astro:content';
 import BaseLayout from '../layouts/BaseLayout.astro';
-import PagePlaceholder from '../components/PagePlaceholder.astro';
+import FiveDimensions from '../components/FiveDimensions.astro';
+import { RESOURCES } from '../lib/resources';
+import { url } from '../lib/url';
+
+const workshops = await getCollection('workshops');
+const titleOf = (id: string) => workshops.find((w) => w.id === id)?.data.title ?? id;
+const sourcesFor = (id: string) =>
+  (RESOURCES.find((r) => r.id === id)?.workshops ?? []).map((w) => ({ href: url(`/workshops/${w}/`), title: titleOf(w) }));
 ---
-<BaseLayout title="Resources" description="Practical guides from RAISE Hub workshops on using and checking AI responsibly.">
-  <PagePlaceholder heading="Resources" step="P6" />
+<BaseLayout
+  title="Resources"
+  description="Practical guides from RAISE Hub workshops: decide what to hand AI, check an AI answer, choose a task worth building, write usable bot instructions, and check a tool before sharing it."
+>
+  <header class="section page-hero">
+    <div class="container">
+      <h1>Resources</h1>
+      <p class="lede">Practical guides from RAISE Hub workshops on using and checking AI responsibly.</p>
+      <nav aria-labelledby="guides-heading">
+        <h2 id="guides-heading" class="visually-hidden">Guides on this page</h2>
+        <ol class="guide-index">
+          {RESOURCES.map((r, i) => (
+            <li><a href={`#${r.id}`}><span class="guide-index__num" aria-hidden="true">{i + 1}</span>{r.title}</a></li>
+          ))}
+        </ol>
+      </nav>
+    </div>
+  </header>
+
+  <div class="section">
+    <div class="container guides">
+      <!-- 1. Decide what to hand AI -->
+      <section class="guide" id="decide" aria-labelledby="decide-heading">
+        <h2 id="decide-heading">Decide what to hand AI</h2>
+        <p>Course rules come first. Then ask two questions about each part of the work.</p>
+        <ol class="flow">
+          <li class="flow__step">
+            <p class="flow__q"><span class="flow__n" aria-hidden="true">1</span>Do your course rules allow AI here?</p>
+            <ul class="flow__outcomes">
+              <li class="outcome outcome--stop"><span class="pill">No</span> Don't use it.</li>
+              <li class="outcome outcome--next"><span class="pill">Yes</span> Go to the next question.</li>
+            </ul>
+          </li>
+          <li class="flow__step">
+            <p class="flow__q"><span class="flow__n" aria-hidden="true">2</span>Can I check AI's answer?</p>
+            <ul class="flow__outcomes">
+              <li class="outcome outcome--box">
+                <span class="pill">No</span>
+                <span><strong><span class="box-num">1</span> Human does it.</strong> If you cannot check it, or checking is as slow as doing it, do it yourself.</span>
+              </li>
+              <li class="outcome outcome--next"><span class="pill">Yes</span> Go to the next question.</li>
+            </ul>
+          </li>
+          <li class="flow__step">
+            <p class="flow__q"><span class="flow__n" aria-hidden="true">3</span>Does this part teach me something?</p>
+            <ul class="flow__outcomes">
+              <li class="outcome outcome--box">
+                <span class="pill">Yes</span>
+                <span><strong><span class="box-num">2</span> Human leads, AI assists.</strong> You keep the thinking.</span>
+              </li>
+              <li class="outcome outcome--box">
+                <span class="pill">No</span>
+                <span><strong><span class="box-num">3</span> AI does it, human checks.</strong> You check the result.</span>
+              </li>
+            </ul>
+          </li>
+        </ol>
+        <p class="key-line">The test: can I spot a wrong answer? You are responsible for the final work.</p>
+        <p class="from">
+          From the workshops:
+          {sourcesFor('decide').map((s, i) => <>{i > 0 && ' · '}<a href={s.href}>{s.title}</a></>)}
+        </p>
+      </section>
+
+      <!-- 2. Check an AI answer -->
+      <section class="guide" id="check" aria-labelledby="check-heading">
+        <h2 id="check-heading">Check an AI answer in four steps</h2>
+        <ol class="steps4">
+          <li><strong>Stop</strong><span>Don't accept it yet.</span></li>
+          <li><strong>Judge the source</strong><span>Who published it, and are they responsible for it?</span></li>
+          <li><strong>Get the original</strong><span>The official document or current page. Check the date.</span></li>
+          <li><strong>Compare</strong><span>Numbers, meaning, conclusion.</span></li>
+        </ol>
+        <ul class="notes">
+          <li>A second AI agreeing is not a check.</li>
+          <li>A correct fact can still lead to an unsupported conclusion.</li>
+          <li>Check more carefully when a mistake could affect your learning, an opportunity or other people.</li>
+        </ul>
+        <p class="from">
+          From the workshop:
+          {sourcesFor('check').map((s, i) => <>{i > 0 && ' · '}<a href={s.href}>{s.title}</a></>)}
+        </p>
+      </section>
+
+      <!-- 3. Choose a task worth building -->
+      <section class="guide" id="choose-a-task" aria-labelledby="task-heading">
+        <h2 id="task-heading">Choose a task worth building</h2>
+        <p>Start with a repeated, low-stakes need, an observable benefit and errors you can check.</p>
+        <ol class="numbered">
+          <li>Can you identify approved materials?</li>
+          <li>Is the expected output clear?</li>
+          <li>Can you check whether it is right?</li>
+          <li>What should happen when information is missing?</li>
+          <li>Who would bear the cost of a wrong answer?</li>
+        </ol>
+        <p class="from">
+          From the workshop:
+          <a href={url('/workshops/tsa-series/#session-1')}>{titleOf('tsa-series')} · Session 1: Know What to Hand AI</a>
+        </p>
+      </section>
+
+      <!-- 4. Four questions for a usable bot instruction -->
+      <section class="guide" id="instructions" aria-labelledby="instructions-heading">
+        <h2 id="instructions-heading">Four questions for a usable bot instruction</h2>
+        <dl class="quad">
+          <div><dt>Job</dt><dd>What task?</dd></div>
+          <div><dt>Source</dt><dd>Which approved material?</dd></div>
+          <div><dt>Boundary</dt><dd>What must it not invent, decide or complete?</dd></div>
+          <div><dt>Next step</dt><dd>What should it say when the source is silent or faculty judgment is needed?</dd></div>
+        </dl>
+        <p class="from">
+          From the workshop:
+          <a href={url('/workshops/tsa-series/#session-1')}>{titleOf('tsa-series')} · Session 1: Know What to Hand AI</a>
+        </p>
+      </section>
+
+      <!-- 5. Before sharing a tool -->
+      <section class="guide" id="before-sharing" aria-labelledby="sharing-heading">
+        <h2 id="sharing-heading">Before sharing a tool: five checks</h2>
+        <ol class="checklist">
+          <li><strong>Defined scope</strong></li>
+          <li><strong>Current, permitted sources</strong></li>
+          <li><strong>Tested behaviour</strong> — answers, language support, boundaries</li>
+          <li><strong>Student guidance</strong> — purpose, limits, instructor support</li>
+          <li><strong>Faculty owner</strong> — review and maintenance</li>
+        </ol>
+        <p class="key-line">Faculty retain assessment and policy decisions.</p>
+        <p class="from">
+          From the workshop:
+          {sourcesFor('before-sharing').map((s, i) => <>{i > 0 && ' · '}<a href={s.href}>{s.title}</a></>)}
+        </p>
+      </section>
+
+      <!-- 6. Five dimensions -->
+      <section class="guide" id="five-dimensions" aria-labelledby="dims-heading">
+        <h2 id="dims-heading">The five dimensions</h2>
+        <FiveDimensions variant="light" />
+        <p class="from">
+          From RAISE Hub's evaluation guidance — see <a href={url('/about/#responsible')}>what “responsible” means</a>.
+        </p>
+      </section>
+
+      <!-- 7. ASU links -->
+      <section class="guide" id="links" aria-labelledby="links-heading">
+        <h2 id="links-heading">ASU links</h2>
+        <ul class="ext-links">
+          <li>
+            <strong>ASU AI policy and resources</strong><br />
+            <a href="https://ai.asu.edu/policy-and-resources">ai.asu.edu/policy-and-resources</a>
+          </li>
+          <li>
+            <strong>CreateAI</strong> (ASU sign-in)<br />
+            <a href="https://platform.aiml.asu.edu">platform.aiml.asu.edu</a>
+          </li>
+        </ul>
+      </section>
+
+      <p class="downloads-note">Downloadable worksheets and slides will be added after review.</p>
+    </div>
+  </div>
 </BaseLayout>
+
+<style>
+  .page-hero {
+    background: var(--surface-alt);
+    border-bottom: 1px solid var(--border);
+  }
+  .guide-index {
+    list-style: none;
+    padding: 0;
+    margin: var(--space-m) 0 0;
+    display: grid;
+    gap: var(--space-xs);
+    grid-template-columns: repeat(auto-fill, minmax(min(100%, 16rem), 1fr));
+  }
+  .guide-index li {
+    margin: 0;
+  }
+  .guide-index a {
+    display: flex;
+    align-items: center;
+    gap: var(--space-xs);
+    height: 100%;
+    padding: var(--space-xs) var(--space-s);
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    font-weight: 700;
+    text-decoration: none;
+  }
+  .guide-index a:hover {
+    border-color: var(--maroon);
+  }
+  .guide-index__num {
+    display: inline-grid;
+    place-items: center;
+    flex-shrink: 0;
+    width: 1.6rem;
+    height: 1.6rem;
+    border-radius: 50%;
+    background: var(--maroon);
+    color: var(--white);
+    font-size: var(--step--1);
+  }
+
+  .guides {
+    max-width: 56rem;
+  }
+  .guide + .guide {
+    margin-top: var(--space-xl);
+    padding-top: var(--space-xl);
+    border-top: 1px solid var(--border);
+  }
+  .guide h2 {
+    font-size: var(--step-3);
+  }
+  .key-line {
+    font-weight: 700;
+    margin-top: var(--space-m);
+  }
+  .from {
+    font-size: var(--step--1);
+    color: var(--gray);
+    margin-top: var(--space-m);
+  }
+
+  /* Decision flow */
+  .flow {
+    list-style: none;
+    padding: 0;
+    margin: var(--space-m) 0 0;
+    display: grid;
+    gap: var(--space-m);
+  }
+  .flow__step {
+    margin: 0;
+    display: grid;
+    gap: var(--space-s);
+    padding: var(--space-m);
+    border: 1px solid var(--border);
+    border-left: 6px solid var(--maroon);
+    border-radius: var(--radius);
+    background: var(--surface);
+    position: relative;
+  }
+  @media (min-width: 48rem) {
+    .flow__step {
+      grid-template-columns: 1fr 1.4fr;
+      align-items: center;
+    }
+  }
+  .flow__step:not(:last-child)::after {
+    content: '';
+    position: absolute;
+    left: 1.6rem;
+    bottom: calc(-1 * var(--space-m) - 1px);
+    width: 3px;
+    height: var(--space-m);
+    background: var(--maroon);
+  }
+  .flow__q {
+    margin: 0;
+    display: flex;
+    align-items: center;
+    gap: var(--space-s);
+    font-weight: 700;
+    font-size: var(--step-1);
+    color: var(--ink);
+  }
+  .flow__n {
+    display: inline-grid;
+    place-items: center;
+    flex-shrink: 0;
+    width: 2rem;
+    height: 2rem;
+    border-radius: 50%;
+    background: var(--maroon);
+    color: var(--white);
+    font-size: var(--step-0);
+  }
+  .flow__outcomes {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: grid;
+    gap: var(--space-xs);
+  }
+  .outcome {
+    margin: 0;
+    display: flex;
+    gap: var(--space-s);
+    align-items: baseline;
+    padding: var(--space-xs) var(--space-s);
+    border-radius: var(--radius);
+  }
+  .outcome--box {
+    background: var(--surface-alt);
+  }
+  .outcome--stop {
+    font-weight: 700;
+  }
+  .outcome--next {
+    color: var(--gray);
+  }
+  .pill {
+    flex-shrink: 0;
+    min-width: 2.6rem;
+    text-align: center;
+    padding: 0.05rem 0.5rem;
+    border-radius: 999px;
+    border: 2px solid var(--maroon);
+    color: var(--maroon);
+    font-weight: 700;
+    font-size: var(--step--1);
+  }
+  .box-num {
+    display: inline-grid;
+    place-items: center;
+    width: 1.4rem;
+    height: 1.4rem;
+    margin-right: 0.2rem;
+    border-radius: 4px;
+    background: var(--maroon);
+    color: var(--white);
+    font-size: var(--step--1);
+  }
+
+  /* Four steps */
+  .steps4 {
+    list-style: none;
+    padding: 0;
+    margin: var(--space-m) 0;
+    display: grid;
+    gap: var(--space-s);
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 11rem), 1fr));
+    counter-reset: step;
+  }
+  .steps4 li {
+    margin: 0;
+    counter-increment: step;
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2xs);
+    padding: var(--space-m);
+    border: 1px solid var(--border);
+    border-top: 6px solid var(--maroon);
+    border-radius: var(--radius);
+  }
+  .steps4 li::before {
+    content: counter(step);
+    font-weight: 700;
+    font-size: var(--step-2);
+    color: var(--maroon);
+    line-height: 1;
+  }
+  .steps4 strong {
+    color: var(--maroon);
+    font-size: var(--step-1);
+  }
+  .notes {
+    padding-left: 1.2rem;
+  }
+
+  .numbered,
+  .checklist {
+    padding-left: 1.4rem;
+  }
+  .checklist li::marker {
+    font-weight: 700;
+  }
+
+  /* Four questions */
+  .quad {
+    margin: var(--space-m) 0 0;
+    display: grid;
+    gap: var(--space-s);
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 12rem), 1fr));
+  }
+  .quad div {
+    padding: var(--space-m);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    background: var(--surface-alt);
+  }
+  .quad dt {
+    font-weight: 700;
+    color: var(--maroon);
+    font-size: var(--step-1);
+  }
+  .quad dd {
+    margin: var(--space-2xs) 0 0;
+  }
+
+  .ext-links {
+    list-style: none;
+    padding: 0;
+    display: grid;
+    gap: var(--space-s);
+  }
+  .ext-links li {
+    margin: 0;
+  }
+  .downloads-note {
+    margin-top: var(--space-xl);
+    padding: var(--space-m) var(--space-l);
+    border: 2px dashed var(--border);
+    border-radius: var(--radius);
+    color: var(--gray);
+    max-width: none;
+  }
+</style>

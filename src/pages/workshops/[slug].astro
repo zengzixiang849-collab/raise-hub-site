@@ -2,6 +2,7 @@
 import { getCollection, type CollectionEntry } from 'astro:content';
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import { url } from '../../lib/url';
+import { resourceById } from '../../lib/resources';
 
 export async function getStaticPaths() {
   const workshops = await getCollection('workshops');
@@ -19,6 +20,11 @@ const projects = await getCollection('projects');
 const related = data.relatedProjects
   .map((slug) => projects.find((p) => p.id === slug))
   .filter((p): p is CollectionEntry<'projects'> => Boolean(p));
+
+// Related resource guides on /resources/ (unknown ids are skipped).
+const resources = data.relatedResources
+  .map((id) => resourceById(id))
+  .filter((r): r is NonNullable<ReturnType<typeof resourceById>> => Boolean(r));
 ---
 <BaseLayout title={data.title} description={data.summary}>
   <article>
@@ -91,6 +97,15 @@ const related = data.relatedProjects
             <h2>Related projects</h2>
             <ul>
               {related.map((p) => <li><a href={url(`/projects/${p.id}/`)}>{p.data.title}</a></li>)}
+            </ul>
+          </section>
+        )}
+
+        {resources.length > 0 && (
+          <section>
+            <h2>Related resources</h2>
+            <ul>
+              {resources.map((r) => <li><a href={url(`/resources/#${r.id}`)}>{r.title}</a></li>)}
             </ul>
           </section>
         )}

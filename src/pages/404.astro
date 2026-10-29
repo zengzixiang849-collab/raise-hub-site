@@ -1,8 +1,52 @@
 ---
-// P1 placeholder — finalized in P6.
 import BaseLayout from '../layouts/BaseLayout.astro';
-import PagePlaceholder from '../components/PagePlaceholder.astro';
+import { NAV } from '../lib/site';
+import { url } from '../lib/url';
 ---
-<BaseLayout title="Page not found">
-  <PagePlaceholder heading="Page not found" step="P6" />
+<BaseLayout title="Page not found" description="The page you were looking for could not be found on the RAISE Hub website.">
+  <section class="section">
+    <div class="container notfound">
+      <p class="eyebrow">Error 404</p>
+      <h1>Page not found</h1>
+      <p class="lede">The page you were looking for doesn't exist or may have moved.</p>
+      <h2 class="notfound__heading">Try one of these instead</h2>
+      <ul class="notfound__links">
+        {NAV.map((item) => (
+          <li><a href={url(item.href)}>{item.label}</a></li>
+        ))}
+      </ul>
+    </div>
+  </section>
 </BaseLayout>
+
+<style>
+  .notfound {
+    max-width: 46rem;
+  }
+  .notfound__heading {
+    font-size: var(--step-1);
+    margin-top: var(--space-l);
+  }
+  .notfound__links {
+    list-style: none;
+    padding: 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-xs);
+  }
+  .notfound__links li {
+    margin: 0;
+  }
+  .notfound__links a {
+    display: inline-block;
+    padding: 0.5rem 1rem;
+    border: 2px solid var(--maroon);
+    border-radius: var(--radius);
+    font-weight: 700;
+    text-decoration: none;
+  }
+  .notfound__links a:hover {
+    background: var(--maroon);
+    color: var(--white);
+  }
+</style>
