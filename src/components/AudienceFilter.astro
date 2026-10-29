@@ -1,0 +1,97 @@
+---
+// Audience filter — progressive enhancement.
+// Without JavaScript the filter stays hidden and every card is shown.
+// With JavaScript: toggle buttons (aria-pressed) show only cards whose
+// data-audience matches, and a polite live region announces the result.
+interface Props {
+  /** Audience values in display order (must match card data-audience values). */
+  audiences: string[];
+  /** id of the element that contains the cards. */
+  target: string;
+  /** Short noun for the announcement, e.g. "workshops". */
+  noun?: string;
+}
+const { audiences, target, noun = 'items' } = Astro.props;
+---
+<div class="filter" data-filter data-target={target} data-noun={noun} hidden>
+  <p class="filter__label" id={`${target}-filter-label`}>Show workshops for:</p>
+  <div class="filter__buttons" role="group" aria-labelledby={`${target}-filter-label`}>
+    <button type="button" data-value="all" aria-pressed="true">All</button>
+    {audiences.map((a) => (
+      <button type="button" data-value={a} aria-pressed="false">{a}</button>
+    ))}
+  </div>
+  <p class="visually-hidden" aria-live="polite" data-status></p>
+</div>
+
+<script>
+  for (const filter of document.querySelectorAll<HTMLElement>('[data-filter]')) {
+    const container = document.getElementById(filter.dataset.target ?? '');
+    if (!container) continue;
+    const cards = [...container.querySelectorAll<HTMLElement>('[data-audience]')];
+    const buttons = [...filter.querySelectorAll<HTMLButtonElement>('button[data-value]')];
+    const status = filter.querySelector<HTMLElement>('[data-status]');
+    const noun = filter.dataset.noun ?? 'items';
+
+    const apply = (value: string) => {
+      let shown = 0;
+      for (const card of cards) {
+        const match = value === 'all' || card.dataset.audience === value;
+        const item = (card.closest('li') ?? card) as HTMLElement;
+        item.hidden = !match;
+        if (match) shown++;
+      }
+      for (const b of buttons) b.setAttribute('aria-pressed', String(b.dataset.value === value));
+      if (status) {
+        const word = shown === 1 ? noun.replace(/s$/, '') : noun;
+        status.textContent =
+          value === 'all' ? `Showing all ${shown} ${word}.` : `Showing ${shown} ${word} for ${value}.`;
+      }
+    };
+
+    for (const b of buttons) b.addEventListener('click', () => apply(b.dataset.value ?? 'all'));
+    filter.hidden = false;
+  }
+</script>
+
+<style>
+  .filter {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--space-xs) var(--space-s);
+    margin-bottom: var(--space-l);
+  }
+  .filter[hidden] {
+    display: none;
+  }
+  .filter__label {
+    margin: 0;
+    font-weight: 700;
+    color: var(--ink);
+  }
+  .filter__buttons {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-xs);
+  }
+  .filter button {
+    font: inherit;
+    font-size: var(--step--1);
+    font-weight: 700;
+    padding: 0.4rem 0.9rem;
+    border-radius: 999px;
+    border: 2px solid var(--maroon);
+    background: var(--surface);
+    color: var(--maroon);
+    cursor: pointer;
+    transition: background-color 150ms ease, color 150ms ease;
+  }
+  .filter button:hover {
+    background: var(--surface-alt);
+  }
+  .filter button[aria-pressed='true'] {
+    background: var(--maroon);
+    color: var(--white);
+  }
+</style>

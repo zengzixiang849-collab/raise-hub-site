@@ -1,8 +1,126 @@
 ---
-// P1 placeholder — replaced in P4.
+// Workshops list. Delivered and upcoming sessions are kept in separate sections.
+// Intro copy: planning/homepage-about-draft.md HOME §6; empty state: content-inventory §A "Upcoming".
+import { getCollection } from 'astro:content';
 import BaseLayout from '../../layouts/BaseLayout.astro';
-import PagePlaceholder from '../../components/PagePlaceholder.astro';
+import WorkshopCard from '../../components/WorkshopCard.astro';
+import AudienceFilter from '../../components/AudienceFilter.astro';
+
+const all = (await getCollection('workshops')).sort((a, b) => a.data.order - b.data.order);
+const delivered = all.filter((w) => w.data.status === 'delivered');
+const upcoming = all.filter((w) => w.data.status === 'upcoming');
+
+const AUDIENCE_ORDER = ['Faculty', 'Students', 'Freshmen', 'Teaching assistants'];
+const audiences = AUDIENCE_ORDER.filter((a) => delivered.some((w) => w.data.audience === a));
+const sessionCount = delivered.reduce((n, w) => n + (w.data.sessions?.length ?? 1), 0);
 ---
-<BaseLayout title="Workshops" description="RAISE Hub workshops for faculty, students and teaching assistants at HAIC.">
-  <PagePlaceholder heading="Workshops" step="P4" />
+<BaseLayout
+  title="Workshops"
+  description="RAISE Hub workshops for faculty, students and teaching assistants at HAIC: observe a worked example, define a task, build something, or test and revise it."
+>
+  <header class="section page-hero">
+    <div class="container">
+      <h1>Workshops</h1>
+      <p class="lede">
+        Our workshops introduce these habits and offer a route into project work and support. Depending on
+        the session, participants observe a worked example, define a task, build something, or test and
+        revise it.
+      </p>
+      <ul class="jump" aria-label="On this page">
+        <li><a href="#delivered">Delivered</a></li>
+        <li><a href="#upcoming">Upcoming</a></li>
+      </ul>
+    </div>
+  </header>
+
+  <section class="section" id="delivered" aria-labelledby="delivered-heading">
+    <div class="container">
+      <div class="section-head">
+        <h2 id="delivered-heading">Delivered</h2>
+        <p class="muted">
+          {sessionCount} sessions in {delivered.length} workshops, including the three-session series for
+          teaching assistants.
+        </p>
+      </div>
+
+      <AudienceFilter audiences={audiences} target="delivered-list" noun="workshops" />
+
+      <ul class="card-list grid" id="delivered-list">
+        {delivered.map((w) => (
+          <li><WorkshopCard workshop={w} /></li>
+        ))}
+      </ul>
+    </div>
+  </section>
+
+  <section class="section section--alt" id="upcoming" aria-labelledby="upcoming-heading">
+    <div class="container">
+      <h2 id="upcoming-heading">Upcoming</h2>
+      {upcoming.length > 0 ? (
+        <ul class="card-list grid">
+          {upcoming.map((w) => (
+            <li><WorkshopCard workshop={w} /></li>
+          ))}
+        </ul>
+      ) : (
+        <p class="empty">New sessions will be announced here.</p>
+      )}
+    </div>
+  </section>
 </BaseLayout>
+
+<style>
+  .page-hero {
+    background: var(--surface-alt);
+    border-bottom: 1px solid var(--border);
+  }
+  .page-hero .lede {
+    max-width: 46rem;
+  }
+  .jump {
+    list-style: none;
+    display: flex;
+    gap: var(--space-m);
+    padding: 0;
+    margin: 0;
+    font-weight: 700;
+  }
+  .jump li {
+    margin: 0;
+  }
+  .section-head {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: var(--space-xs) var(--space-l);
+    margin-bottom: var(--space-m);
+  }
+  .section-head h2,
+  .section-head p {
+    margin: 0;
+  }
+  .card-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+  .card-list > li {
+    margin: 0;
+    display: flex;
+  }
+  .card-list > li[hidden] {
+    display: none;
+  }
+  .card-list > li > :global(*) {
+    flex: 1;
+  }
+  .empty {
+    padding: var(--space-l);
+    border: 2px dashed var(--border);
+    border-radius: var(--radius);
+    color: var(--gray);
+    background: var(--surface);
+    max-width: none;
+  }
+</style>
