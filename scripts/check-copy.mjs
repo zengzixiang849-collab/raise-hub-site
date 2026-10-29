@@ -136,8 +136,63 @@ for (const c of checks) {
 
 const byPage = {};
 for (const c of checks) byPage[c.page] = (byPage[c.page] ?? 0) + 1;
-console.log(`Copy fidelity: ${checks.length - misses.length}/${checks.length} draft sentences found verbatim across ${Object.keys(byPage).length} pages.`);
+console.log(`Forward: ${checks.length - misses.length}/${checks.length} draft sentences found verbatim across ${Object.keys(byPage).length} pages.`);
 if (misses.length) {
   console.log(`\nNot found verbatim (${misses.length}) — review each: intentional adaptation or error?`);
   for (const m of misses) console.log(`- ${m.page} [${m.source}]${m.why ? ' ' + m.why : ''}\n    "${m.sentence}"`);
 }
+
+// ---- Reverse: is every sentence on the page traceable to the planning docs? ----
+// Catches text added in the site that no approved draft contains.
+const corpusFiles = ['homepage-about-draft.md', 'content-inventory.md', 'sitemap.md'];
+const corpus = norm(
+  corpusFiles
+    .map((f) => readFileSync(join(planning, f), 'utf8'))
+    .join('\n')
+    .replace(/\*\*|__|`/g, '')
+    .replace(/(^|\s)\*([^*\n]+)\*/g, '$1$2')
+    .replace(/\((?:deck|decks) [^)]*\)|\(p\d+(?:[–-]\d+)?(?:, p\d+(?:[–-]\d+)?)*\)/g, ' ')
+    .replace(/^\s*[-*|]\s*/gm, ' ')
+    .replace(/\s*\|\s*/g, ' '),
+).toLowerCase();
+
+// UI microcopy and computed labels that are interface text, not content claims.
+// Each entry is justified; anything else must be traceable to planning/.
+// Keep this list short: page copy belongs in planning/sitemap.md, not here.
+const UI_ALLOWED = [
+  /^\d+ sessions in \d+ workshops, including the three-session series for teaching assistants\.$/, // computed from content (START_HERE)
+  /^From (the workshops?|RAISE Hub's evaluation guidance)/, // source attribution label
+];
+
+const unsourced = [];
+for (const page of Object.keys(byPage).concat(['/workshops/index.html', '/projects/index.html', '/404.html'])) {
+  const file = join(dist, page);
+  if (!existsSync(file)) continue;
+  const html = readFileSync(file, 'utf8');
+  const main = (html.match(/<main[\s\S]*?<\/main>/) ?? [''])[0]
+    .replace(/<aside class="review-pending[\s\S]*?<\/aside>/g, ' ') // review notes come from the checklist
+    .replace(/<(style|script)[\s\S]*?<\/\1>/gi, ' ')
+    .replace(/<(span|div)[^>]*aria-hidden="true"[^>]*>[\s\S]*?<\/\1>/gi, ' ') // decorative numbers/arrows
+    .replace(/<span class="visually-hidden[^"]*"[^>]*>[\s\S]*?<\/span>/gi, ' ')
+    // Labels, badges, pills, buttons and links are separate segments, not parts of a sentence
+    .replace(/<\/(p|li|h[1-6]|dt|dd|figcaption|div|section|header|ol|ul|dl|article|nav|strong|span|em|a|button)>/gi, '\n')
+    .replace(/<br\s*\/?>/gi, '\n')
+    .replace(/<[^>]+>/g, ' ')
+    .replace(/&amp;/g, '&').replace(/&#39;/g, "'").replace(/&quot;/g, '"');
+  const seen = new Set();
+  for (const line of main.split('\n')) {
+    for (const s of norm(line).split(/(?<=[.?!])\s+(?=[A-Z"])/)) {
+      const t = s.replace(/^(Need|Status):\s*/, '').trim();
+      if (t.split(' ').length < 6 || seen.has(t)) continue; // headings, labels, chips
+      seen.add(t);
+      if (corpus.includes(t.toLowerCase().replace(/[.?!:]$/, ''))) continue;
+      if (UI_ALLOWED.some((re) => re.test(t))) continue;
+      unsourced.push({ page, sentence: t });
+    }
+  }
+}
+console.log(`Reverse: ${unsourced.length} sentence(s) on the site not traceable to planning/ (excluding justified UI text).`);
+for (const u of unsourced) console.log(`- ${u.page}\n    "${u.sentence}"`);
+
+if (misses.length || unsourced.length) process.exit(1);
+console.log('Copy fidelity OK in both directions.');
