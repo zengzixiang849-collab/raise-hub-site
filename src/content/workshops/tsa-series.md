@@ -37,6 +37,9 @@ sessions:
     leaveWith: "Evaluation evidence, one correction with a retest, and a faculty hand-back recommendation."
 relatedProjects: [syllabot, study-guide-assistant]
 relatedResources: [choose-a-task, instructions]
+poster:
+  image: "tsa-series"
+  alt: "Poster for the workshop series “Assist Faculty Using AI Responsibly”, for all HAIC teaching service assistants. One morning, three sessions, each building on the one before: Know What to Hand AI, Build an AI Course Helper, and Test It Before Faculty Use It. The tool is ASU CreateAI Builder, no coding. Walk away with three draft bots: study guide and practice questions, syllabus check, and grading help (rubric drafts). Wednesday 21 October 2026, 8:35 to 11:20 AM, Room 2-209. Bring a laptop and your ASU login."
 fictionalMaterials: true
 sourceDeck: "03_TSA_1_Know_What_to_Hand_AI.pdf, 04_TSA_2_Build_an_AI_Course_Helper.pdf, 05_TSA_3_Test_It_Before_Faculty_Use_It.pdf"
 reviewStatus: draft

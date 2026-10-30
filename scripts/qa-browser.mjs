@@ -115,6 +115,106 @@ report.jsOff = { cards, hiddenCards, filterHidden: /\shidden/.test(filterTag) };
 if (!(cards === 6 && hiddenCards === 0 && report.jsOff.filterHidden)) failures.push(`JS off: ${JSON.stringify(report.jsOff)}`);
 await send('Emulation.setScriptExecutionDisabled', { value: false });
 
+// 4. Poster carousel: buttons, keyboard, dial drag/click, side-poster click, poster drag
+report.carousel = [];
+async function shotViewport(file) {
+  // current viewport only (no clip), so the screenshot shows what the visitor sees after scrolling
+  const shot = await send('Page.captureScreenshot', { format: 'jpeg', quality: 78 });
+  writeFileSync(join(OUT, file), Buffer.from(shot.data, 'base64'));
+}
+const mouse = (type, x, y) => send('Input.dispatchMouseEvent', { type, x, y, button: type === 'mouseMoved' ? 'none' : 'left', buttons: type === 'mouseReleased' ? 0 : 1, clickCount: 1 });
+async function click(x, y) { await mouse('mousePressed', x, y); await mouse('mouseReleased', x, y); await sleep(450); }
+async function drag(x1, y, x2) {
+  await mouse('mousePressed', x1, y);
+  for (let i = 1; i <= 12; i++) { await mouse('mouseMoved', x1 + ((x2 - x1) * i) / 12, y); await sleep(15); }
+  await mouse('mouseReleased', x2, y);
+  await sleep(450);
+}
+async function key(k, code, vk) {
+  await send('Input.dispatchKeyEvent', { type: 'keyDown', key: k, code, windowsVirtualKeyCode: vk });
+  await send('Input.dispatchKeyEvent', { type: 'keyUp', key: k, code, windowsVirtualKeyCode: vk });
+  await sleep(450);
+}
+for (const width of [1280, 375]) {
+  await send('Emulation.setDeviceMetricsOverride', { width, height: 900, deviceScaleFactor: 1, mobile: width < 768 });
+  await open('/workshops/');
+  const state = () => evaluate(`(() => { const r = document.querySelector('[data-carousel]'); const s = r.querySelector('[data-slider]');
+    return { enhanced: r.classList.contains('is-enhanced'), now: Number(s.getAttribute('aria-valuenow')), text: s.getAttribute('aria-valuetext'),
+      current: [...r.querySelectorAll('[data-slide]')].findIndex((x) => x.classList.contains('is-current')) + 1,
+      prevOff: r.querySelector('[data-prev]').getAttribute('aria-disabled'), nextOff: r.querySelector('[data-next]').getAttribute('aria-disabled'),
+      status: r.querySelector('[data-status]').textContent, tabbable: [...r.querySelectorAll('[data-slide] a')].filter((a) => a.tabIndex === 0).length }; })()`);
+  const center = (sel) => evaluate(`(() => { const b = document.querySelector('${sel}').getBoundingClientRect(); return { x: b.x + b.width / 2, y: b.y + b.height / 2, w: b.width }; })()`);
+  const slideCenter = (i) => evaluate(`(() => { const b = document.querySelectorAll('[data-slide]')[${i}].getBoundingClientRect(); return { x: b.x + b.width / 2, y: b.y + b.height * 0.4 }; })()`);
+  const log = (step, s, expect) => {
+    const ok = Object.entries(expect).every(([k, v]) => s[k] === v);
+    report.carousel.push({ width, step, ...s, expect, ok });
+    if (!ok) failures.push(`carousel ${width}px "${step}": expected ${JSON.stringify(expect)}, got now=${s.now} current=${s.current} prevOff=${s.prevOff} nextOff=${s.nextOff} tabbable=${s.tabbable} enhanced=${s.enhanced}`);
+  };
+  const tag = `carousel_${width}`;
+  // bring the carousel into view (below the text on a phone) so mouse coordinates are on screen
+  await evaluate(`(() => { const r = document.querySelector('[data-carousel]').getBoundingClientRect(); window.scrollTo(0, Math.max(0, window.scrollY + r.top - 70)); })()`);
+  await sleep(300);
+
+  let s = await state();
+  log('initial', s, { enhanced: true, now: 2, current: 2, tabbable: 1 });
+  await shotViewport(`${tag}_1_initial.jpg`);
+
+  await click(...Object.values(await center('[data-next]')).slice(0, 2));
+  s = await state(); log('next button', s, { now: 3, current: 3 });
+  await shotViewport(`${tag}_2_next.jpg`);
+
+  await evaluate(`document.querySelector('[data-slider]').focus()`);
+  await key('ArrowLeft', 'ArrowLeft', 37); await key('ArrowLeft', 'ArrowLeft', 37);
+  s = await state(); log('ArrowLeft x2', s, { now: 1, prevOff: 'true', nextOff: 'false' });
+  await key('ArrowLeft', 'ArrowLeft', 37);
+  s = await state(); log('ArrowLeft at the start stays', s, { now: 1 });
+  await key('End', 'End', 35);
+  s = await state(); log('End', s, { now: 4, nextOff: 'true', current: 4 });
+  if (!/Poster 4 of 4/.test(s.status)) failures.push(`carousel ${width}px: live region says "${s.status}"`);
+  await key('Home', 'Home', 36);
+  s = await state(); log('Home', s, { now: 1, current: 1 });
+
+  const dial = await center('[data-svg]');
+  // pixels the dial needs to move for one poster, at this screen width
+  const stepPx = await evaluate(`(() => { const s = document.querySelector('[data-svg]'); return Number(s.dataset.r) * 8 * Math.PI / 180 * (s.getBoundingClientRect().width / Number(s.dataset.vbw)); })()`);
+  await drag(dial.x + 20, dial.y, dial.x + 20 - Math.round(stepPx * 1.1));   // drag the dial left by 1.1 steps
+  s = await state(); log('drag dial left (1.1 steps)', s, { now: 2 });
+  await shotViewport(`${tag}_3_after_dial_drag.jpg`);
+
+  const right = await slideCenter(2);                      // poster 3 is the right-hand neighbour
+  await click(right.x, right.y);
+  s = await state(); log('click right-hand poster', s, { now: 3 });
+
+  const mid = await slideCenter(2);                        // drag the posters themselves
+  const unitPx = await evaluate(`document.querySelector('[data-slide]').offsetWidth * 0.62`);   // = SLIDE_SHIFT
+  await evaluate(`(() => { window.__ev = []; const t = document.querySelector('[data-track]');
+    ['pointerdown', 'pointermove', 'pointerup', 'pointercancel', 'dragstart', 'click'].forEach((n) => t.addEventListener(n, (e) => { if (window.__ev.length < 40) window.__ev.push(n + ':' + e.target.tagName + ':' + Math.round(e.clientX)); }, true)); })()`);
+  await drag(mid.x, mid.y, mid.x - Math.round(unitPx * 1.1));   // drag the posters left by 1.1 poster widths
+  s = await state(); log('drag posters left (1.1 units)', s, { now: 4 });
+  if (s.now !== 4) failures.push(`  events seen by the poster stage: ${(await evaluate('window.__ev.join(" | ")')).slice(0, 700)} (press at ${Math.round(mid.x)},${Math.round(mid.y)}, unit ${Math.round(unitPx)}px)`);
+  await shotViewport(`${tag}_4_last.jpg`);
+
+  // a drag that leaves the carousel entirely (into the text column / off the page edge) must still end cleanly
+  await evaluate(`document.querySelector('[data-slider]').focus({ preventScroll: true })`);
+  await key('Home', 'Home', 36);
+  s = await state(); log('Home again (focus on the dial)', s, { now: 1 });
+  const dragging = () => evaluate(`document.querySelector('[data-carousel]').classList.contains('is-dragging')`);
+
+  const first = await slideCenter(0);                        // poster 1 is now the one in the middle
+  await drag(first.x, first.y, Math.min(width - 2, first.x + Math.round(width * 0.45)));
+  s = await state(); log('drag right past the carousel edge (stays on poster 1)', s, { now: 1 });
+  if (await dragging()) failures.push(`carousel ${width}px: still dragging after releasing to the right of the carousel`);
+
+  await drag(first.x, first.y, 2);                           // all the way to the left page edge
+  const expectNow = Math.min(4, 1 + Math.round((first.x - 2) / unitPx));   // as far as that distance reaches
+  s = await state(); log(`drag left to the page edge (expect poster ${expectNow})`, s, { now: expectNow });
+  if (await dragging()) failures.push(`carousel ${width}px: still dragging after releasing at the page edge`);
+
+  const tick = await evaluate(`(() => { const b = document.querySelector('[data-svg]').getBoundingClientRect(); return Math.round(b.x + b.width / 2); })()`);
+  await click(tick - 40, dial.y);                           // click the dial slightly left of the pointer
+  s = await state(); log('click on the dial', s, {});       // just must not throw; value reported
+}
+
 // 3. Keyboard: Tab through the homepage at desktop width
 await send('Emulation.setDeviceMetricsOverride', { width: 1280, height: 900, deviceScaleFactor: 1, mobile: false });
 await open('/');
