@@ -46,7 +46,11 @@ let checked = 0;
 for (const file of htmlFiles) {
   const html = readFileSync(file, 'utf8');
   const page = '/' + relative(dist, file).split(sep).join('/');
-  for (const [, attr, value] of html.matchAll(/\s(href|src)="([^"]*)"/g)) {
+  // srcset="url 480w, url 800w": each candidate URL must resolve too
+  const srcsetUrls = [...html.matchAll(/\ssrcset="([^"]*)"/g)].flatMap((m) =>
+    m[1].split(',').map((c) => ['', 'srcset', c.trim().split(/\s+/)[0]]),
+  );
+  for (const [, attr, value] of [...html.matchAll(/\s(href|src)="([^"]*)"/g), ...srcsetUrls]) {
     if (/^(https?:|mailto:|tel:|data:|javascript:)/i.test(value)) continue;
     checked++;
     if (value.startsWith('#')) {

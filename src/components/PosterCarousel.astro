@@ -1,0 +1,314 @@
+---
+// Poster carousel with a compass-style tick dial.
+// Without JavaScript: a horizontally scrollable row of posters (all visible, all reachable).
+// With JavaScript (src/lib/carousel.js): stacked posters + dial + buttons + keyboard + drag.
+import type { CollectionEntry } from 'astro:content';
+import { url } from '../lib/url';
+import { POSTER_WIDTHS, POSTER_RATIO, assertPosterFiles } from '../lib/posters';
+import { STEP_DEG } from '../lib/carousel-math.js';
+
+interface Props {
+  workshops: CollectionEntry<'workshops'>[];
+  /** Index of the poster shown first (default: the second one, so both neighbours show). */
+  start?: number;
+}
+const { workshops, start = 1 } = Astro.props;
+const n = workshops.length;
+
+const items = workshops.map((w) => {
+  if (!w.data.poster) throw new Error(`src/content/workshops/${w.id}.md: PosterCarousel needs a poster field`);
+  assertPosterFiles(w.data.poster.image, `src/content/workshops/${w.id}.md`);
+  const base = `/posters/${w.data.poster.image}`;
+  return {
+    id: w.id,
+    title: w.data.title,
+    audience: w.data.audience,
+    alt: w.data.poster.alt,
+    src: url(`${base}-800.webp`),
+    srcset: POSTER_WIDTHS.map((px) => `${url(`${base}-${px}.webp`)} ${px}w`).join(', '),
+  };
+});
+
+// ---- Dial geometry (SVG user units) ----
+const VB_W = 640;
+const VB_H = 150;
+const R = 760; // radius of the arc
+const TOP = 30; // y of the arc's highest point
+const CX = VB_W / 2;
+const CY = TOP + R;
+const MINOR = STEP_DEG / 5; // five ticks per poster step
+const PAD = Math.ceil(32 / MINOR); // ticks beyond the first/last poster
+const rad = (d: number) => (d * Math.PI) / 180;
+const f = (v: number) => v.toFixed(1);
+
+const ticks = [];
+for (let j = -PAD; j <= (n - 1) * 5 + PAD; j++) {
+  const a = j * MINOR;
+  const isPoster = j % 5 === 0 && j >= 0 && j <= (n - 1) * 5;
+  const len = isPoster ? 36 : j % 5 === 0 ? 26 : 15;
+  const r1 = R - len;
+  ticks.push({
+    kind: isPoster ? 'poster' : j % 5 === 0 ? 'major' : 'minor',
+    x1: f(CX + r1 * Math.sin(rad(a))),
+    y1: f(CY - r1 * Math.cos(rad(a))),
+    x2: f(CX + R * Math.sin(rad(a))),
+    y2: f(CY - R * Math.cos(rad(a))),
+  });
+}
+---
+<section class="carousel" data-carousel data-start={start} aria-roledescription="carousel" aria-label="Workshop posters">
+  <ul class="carousel__track" data-track>
+    {items.map((it, i) => (
+      <li
+        class="slide"
+        data-slide
+        data-title={it.title}
+        role="group"
+        aria-roledescription="slide"
+        aria-label={`${i + 1} of ${n}: ${it.title}`}
+      >
+        <figure class="slide__figure">
+          <img
+            class="slide__img"
+            src={it.src}
+            srcset={it.srcset}
+            sizes="(min-width: 56rem) 300px, 62vw"
+            width="800"
+            height={Math.round(800 * POSTER_RATIO)}
+            alt={it.alt}
+            loading={i === start || i === start - 1 || i === start + 1 ? 'eager' : 'lazy'}
+            draggable="false"
+          />
+          <figcaption class="slide__caption">
+            <span class="badge">{it.audience}</span>
+            <a class="slide__link" href={url(`/workshops/${it.id}/`)}>{it.title}</a>
+          </figcaption>
+        </figure>
+      </li>
+    ))}
+  </ul>
+
+  <div class="controls" data-controls hidden>
+    <button type="button" class="arrow" data-prev aria-label="Previous poster" aria-disabled="false">
+      <svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true" focusable="false">
+        <path d="M15 5 8 12l7 7" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" />
+      </svg>
+    </button>
+
+    <div
+      class="slider"
+      data-slider
+      role="slider"
+      tabindex="0"
+      aria-label="Choose a workshop poster"
+      aria-valuemin="1"
+      aria-valuemax={n}
+      aria-valuenow={start + 1}
+      aria-valuetext={`Poster ${start + 1} of ${n}: ${items[start]?.title ?? ''}`}
+    >
+      <svg
+        class="dial"
+        data-svg
+        data-cx={CX}
+        data-cy={CY}
+        data-r={R}
+        data-vbw={VB_W}
+        viewBox={`0 0 ${VB_W} ${VB_H}`}
+        aria-hidden="true"
+        focusable="false"
+      >
+        <g data-dial transform={`rotate(${-start * STEP_DEG} ${CX} ${CY})`}>
+          {ticks.map((t) => (
+            <line class={`tick tick--${t.kind}`} x1={t.x1} y1={t.y1} x2={t.x2} y2={t.y2} />
+          ))}
+        </g>
+        <line class="pointer" x1={CX} y1={TOP - 12} x2={CX} y2={TOP + 50} />
+      </svg>
+    </div>
+
+    <button type="button" class="arrow" data-next aria-label="Next poster" aria-disabled="false">
+      <svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true" focusable="false">
+        <path d="m9 5 7 7-7 7" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" />
+      </svg>
+    </button>
+  </div>
+
+  <p class="visually-hidden" aria-live="polite" data-status></p>
+</section>
+
+<script>
+  import { initCarousel } from '../lib/carousel.js';
+  document.querySelectorAll('[data-carousel]').forEach((el) => initCarousel(el));
+</script>
+
+<style>
+  .carousel {
+    --pw: min(18rem, 52%);
+    overflow-x: clip;
+  }
+  @media (max-width: 55.99rem) {
+    .carousel {
+      --pw: min(18rem, 64%); /* single column: the middle poster can be larger */
+    }
+  }
+
+  /* ---------- No JavaScript: a scrollable row of posters ---------- */
+  .carousel__track {
+    list-style: none;
+    margin: 0;
+    padding: var(--space-s) var(--space-2xs) var(--space-m);
+    display: flex;
+    gap: var(--space-m);
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+  }
+  .slide {
+    margin: 0;
+    flex: 0 0 min(16rem, 72%);
+    scroll-snap-align: center;
+  }
+  .slide__figure {
+    margin: 0;
+  }
+  .slide__img {
+    display: block;
+    width: 100%;
+    height: auto;
+    aspect-ratio: 297 / 420;
+    object-fit: cover;
+    border-radius: 4px;
+    box-shadow: 0 10px 28px -12px rgba(38, 38, 38, 0.45);
+    background: var(--surface-alt);
+    -webkit-user-drag: none;
+  }
+  .slide__caption {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: var(--space-2xs) var(--space-xs);
+    margin-top: var(--space-s);
+  }
+  .slide__link {
+    font-weight: 700;
+    line-height: 1.3;
+  }
+
+  /* ---------- With JavaScript ---------- */
+  .is-enhanced .carousel__track {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 0;
+    overflow: visible;
+    scroll-snap-type: none;
+    perspective: 1400px;
+    padding-block: var(--space-m) var(--space-s);
+    touch-action: pan-y;
+    user-select: none;
+    cursor: grab;
+  }
+  /* side posters fade out softly where the column ends instead of being cut off */
+  .is-enhanced .carousel__track {
+    -webkit-mask-image: linear-gradient(90deg, transparent 0, #000 7%, #000 93%, transparent 100%);
+    mask-image: linear-gradient(90deg, transparent 0, #000 7%, #000 93%, transparent 100%);
+  }
+  .is-dragging .carousel__track,
+  .is-dragging .slider {
+    cursor: grabbing;
+  }
+  .is-enhanced .slide {
+    grid-area: 1 / 1;
+    justify-self: center;
+    width: var(--pw);
+    flex: none;
+    will-change: transform, opacity;
+  }
+  .is-enhanced:not(.is-dragging) .slide {
+    transition: none;
+  }
+  /* only the poster in the middle shows its caption */
+  .is-enhanced .slide__caption {
+    transition: opacity 150ms ease;
+  }
+  .is-enhanced .slide:not(.is-current) .slide__caption {
+    opacity: 0;
+  }
+  .is-enhanced .slide:not(.is-current) {
+    cursor: pointer;
+  }
+
+  /* ---------- Controls ---------- */
+  .controls {
+    display: flex;
+    align-items: center;
+    gap: var(--space-s);
+    margin-top: var(--space-xs);
+  }
+  .controls[hidden] {
+    display: none;
+  }
+  .slider {
+    flex: 1;
+    min-width: 0;
+    touch-action: pan-y;
+    user-select: none;
+    cursor: grab;
+    border-radius: 10px;
+    padding-block: var(--space-2xs);
+  }
+  .dial {
+    display: block;
+    width: 100%;
+    height: auto;
+    overflow: hidden;
+    /* the dial fades out towards both ends */
+    -webkit-mask-image: linear-gradient(90deg, transparent 0, #000 16%, #000 84%, transparent 100%);
+    mask-image: linear-gradient(90deg, transparent 0, #000 16%, #000 84%, transparent 100%);
+  }
+  .tick {
+    stroke-linecap: round;
+  }
+  .tick--minor {
+    stroke: var(--gray);
+    stroke-width: 1.8;
+  }
+  .tick--major {
+    stroke: var(--gray);
+    stroke-width: 2.4;
+  }
+  .tick--poster {
+    stroke: var(--ink);
+    stroke-width: 3.2;
+  }
+  .pointer {
+    stroke: var(--maroon);
+    stroke-width: 4;
+    stroke-linecap: round;
+  }
+  .arrow {
+    flex: none;
+    display: inline-grid;
+    place-items: center;
+    width: 2.75rem;
+    height: 2.75rem;
+    border-radius: 50%;
+    border: 2px solid var(--maroon);
+    background: var(--surface);
+    color: var(--maroon);
+    cursor: pointer;
+    transition: background-color 150ms ease, color 150ms ease;
+  }
+  .arrow:hover {
+    background: var(--maroon);
+    color: var(--white);
+  }
+  .arrow[aria-disabled='true'] {
+    border-color: #b8b2a7;
+    color: #8a877f;
+    background: transparent;
+    cursor: default;
+  }
+  .arrow[aria-disabled='true']:hover {
+    background: transparent;
+    color: #8a877f;
+  }
+</style>

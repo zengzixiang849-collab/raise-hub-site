@@ -5,8 +5,11 @@ import { getCollection } from 'astro:content';
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import WorkshopCard from '../../components/WorkshopCard.astro';
 import AudienceFilter from '../../components/AudienceFilter.astro';
+import PosterCarousel from '../../components/PosterCarousel.astro';
+import { url } from '../../lib/url';
 
 const all = (await getCollection('workshops')).sort((a, b) => a.data.order - b.data.order);
+const withPoster = all.filter((w) => w.data.poster);
 const delivered = all.filter((w) => w.data.status === 'delivered');
 const upcoming = all.filter((w) => w.data.status === 'upcoming');
 
@@ -19,17 +22,25 @@ const sessionCount = delivered.reduce((n, w) => n + (w.data.sessions?.length ?? 
   description="RAISE Hub workshops for faculty, students and teaching assistants at HAIC: observe a worked example, define a task, build something, or test and revise it."
 >
   <header class="section page-hero">
-    <div class="container">
-      <h1>Workshops</h1>
-      <p class="lede">
-        Our workshops introduce these habits and offer a route into project work and support. Depending on
-        the session, participants observe a worked example, define a task, build something, or test and
-        revise it.
-      </p>
-      <ul class="jump" aria-label="On this page">
-        <li><a href="#delivered">Delivered</a></li>
-        <li><a href="#upcoming">Upcoming</a></li>
-      </ul>
+    <div class="container hero-grid">
+      <div class="hero-text">
+        <p class="eyebrow" aria-hidden="true">Workshops</p>
+        <h1>Workshops</h1>
+        <p class="lede">
+          Our workshops introduce these habits and offer a route into project work and support. Depending on
+          the session, participants observe a worked example, define a task, build something, or test and
+          revise it.
+        </p>
+        <div class="hero-actions">
+          <a class="button button--primary" href="#delivered">Explore workshops →</a>
+          <a class="hero-link" href={url('/about/#workshops-and-projects')}>Learn more</a>
+        </div>
+      </div>
+      {withPoster.length > 1 && (
+        <div class="hero-posters">
+          <PosterCarousel workshops={withPoster} />
+        </div>
+      )}
     </div>
   </header>
 
@@ -71,22 +82,42 @@ const sessionCount = delivered.reduce((n, w) => n + (w.data.sessions?.length ?? 
 
 <style>
   .page-hero {
-    background: var(--surface-alt);
     border-bottom: 1px solid var(--border);
+    padding-block: var(--space-xl);
+    background: linear-gradient(180deg, var(--surface) 0%, var(--surface-alt) 100%);
   }
-  .page-hero .lede {
-    max-width: 46rem;
+  .hero-grid {
+    display: grid;
+    gap: var(--space-xl);
+    align-items: center;
   }
-  .jump {
-    list-style: none;
+  @media (min-width: 56rem) {
+    .hero-grid {
+      /* text about 45 %, posters about 55 % */
+      grid-template-columns: minmax(0, 9fr) minmax(0, 11fr);
+    }
+  }
+  .hero-text .lede {
+    max-width: 36rem;
+  }
+  .hero-text h1 {
+    font-size: clamp(2.6rem, 2rem + 3.4vw, 4.25rem);
+  }
+  .hero-actions {
     display: flex;
-    gap: var(--space-m);
-    padding: 0;
-    margin: 0;
-    font-weight: 700;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--space-m) var(--space-l);
+    margin-top: var(--space-l);
   }
-  .jump li {
-    margin: 0;
+  .hero-link {
+    font-weight: 700;
+    font-size: var(--step-1);
+  }
+  .hero-posters {
+    width: 100%;
+    max-width: 36rem;
+    justify-self: center;
   }
   .section-head {
     display: flex;

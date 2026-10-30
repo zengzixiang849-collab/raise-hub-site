@@ -14,6 +14,9 @@ practise: "Fictional library-study and scholarship examples; bilingual (English/
 leaveWith: "A commitment for one real assignment: what AI could help with, what you will do yourself, and how you will check."
 relatedProjects: []
 relatedResources: [decide, check]
+poster:
+  image: "using-ai-responsibly-freshmen"
+  alt: "Poster for the freshman workshop “Using AI Responsibly: Know When to Use It, and How to Check It”, with Annus Azhar, RAISE Hub. Monday 26 October 2026, 11:35 AM to 12:20 PM, Room 3-A107. Questions: Annus Azhar, annus.azhar@asu.edu."
 fictionalMaterials: true
 sourceDeck: "07_Freshmen_Using_AI_Responsibly.pdf"
 reviewStatus: draft
