@@ -28,16 +28,17 @@ const { variant = 'light' } = Astro.props;
     margin: 0;
     padding: 0;
     display: grid;
-    gap: var(--space-s);
-    grid-template-columns: repeat(auto-fit, minmax(min(100%, 13rem), 1fr));
+    gap: 0;
+    grid-template-columns: 1fr;
   }
   .dimension {
     margin: 0;
-    padding: var(--space-m);
-    border-radius: var(--radius);
-    display: flex;
-    flex-direction: column;
-    gap: var(--space-xs);
+    padding: var(--space-m) 0;
+    border-radius: 0;
+    display: grid;
+    grid-template-columns: 3rem minmax(0, 1fr);
+    gap: var(--space-m);
+    align-items: start;
   }
   .dimension__number {
     font-size: var(--step-2);
@@ -55,11 +56,9 @@ const { variant = 'light' } = Astro.props;
     line-height: 1.25;
   }
 
-  /* Light: white cards on off-white or white sections */
+  /* Light: editorial rows rather than a generic card wall. */
   .dimensions--light .dimension {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-top: 6px solid var(--maroon);
+    border-top: 1px solid var(--border);
   }
   .dimensions--light .dimension__number,
   .dimensions--light .dimension__name {
@@ -69,14 +68,26 @@ const { variant = 'light' } = Astro.props;
   /* Dark: on a maroon band. The card background darkens maroon so gold text
      reaches 5.3:1 (gold directly on maroon is only 4.3:1). */
   .dimensions--dark .dimension {
-    background: rgba(0, 0, 0, 0.18);
-    border-top: 6px solid var(--gold);
+    border-top: 1px solid rgba(255, 255, 255, 0.28);
   }
   .dimensions--dark .dimension__number,
-  .dimensions--dark .dimension__name {
+  .dimensions--dark .dimension__number {
     color: var(--gold);
+  }
+  .dimensions--dark .dimension__name {
+    color: var(--white);
   }
   .dimensions--dark .dimension__question {
     color: var(--white);
+  }
+  @media (min-width: 58rem) {
+    .dimensions {
+      grid-template-columns: 1fr 1fr;
+      column-gap: var(--space-xl);
+    }
+    .dimension:last-child {
+      grid-column: 1 / -1;
+      max-width: 44rem;
+    }
   }
 </style>

@@ -1,101 +1,99 @@
 ---
-// "Learning by doing" — five steps rendered as an ordered list (accessible),
-// styled as a loop. Copy: planning/homepage-about-draft.md, HOME §3.
-const STEPS = [
-  { lead: 'Identify a real need', rest: 'in teaching or learning at HAIC.' },
-  { lead: 'Build or adapt', rest: 'a small tool or workflow.' },
-  { lead: 'Evaluate', rest: 'it: test its outputs against approved sources and our five dimensions.' },
-  { lead: 'Reflect', rest: 'on what the evidence shows, including where it failed.' },
-  { lead: 'Improve', rest: 'it, retest, and decide whether, how and by whom it should be used.' },
-];
+interface Props { locale?: 'en' | 'zh' }
+const { locale = 'en' } = Astro.props;
+const STEPS = locale === 'zh'
+  ? [
+      { verb: '识别', lead: '识别真实需求', rest: '从 HAIC 的教学或学习需求出发。' },
+      { verb: '构建', lead: '构建或调整', rest: '一个小型工具或工作流程。' },
+      { verb: '评估', lead: '评估', rest: '依据获准来源和五个维度测试输出。' },
+      { verb: '反思', lead: '反思证据', rest: '包括工具在哪里失败。' },
+      { verb: '改进', lead: '改进并重新测试', rest: '再决定是否、如何以及由谁使用。' },
+    ]
+  : [
+      { verb: 'Define', lead: 'Identify a real need', rest: 'in teaching or learning at HAIC.' },
+      { verb: 'Build', lead: 'Build or adapt', rest: 'a small tool or workflow.' },
+      { verb: 'Test', lead: 'Evaluate', rest: 'it: test its outputs against approved sources and our five dimensions.' },
+      { verb: 'Reflect', lead: 'Reflect', rest: 'on what the evidence shows, including where it failed.' },
+      { verb: 'Improve', lead: 'Improve', rest: 'it, retest, and decide whether, how and by whom it should be used.' },
+    ];
 ---
-<div class="cycle">
-  <ol class="cycle__steps">
-    {STEPS.map((s, i) => (
-      <li class="cycle__step">
-        <span class="cycle__num" aria-hidden="true">{i + 1}</span>
-        <p><strong>{s.lead}</strong> {s.rest}</p>
+<div class="practice-track">
+  <ol>
+    {STEPS.map((step, i) => (
+      <li>
+        <span class="practice-track__number" aria-hidden="true">{String(i + 1).padStart(2, '0')}</span>
+        <span class="practice-track__verb">{step.verb}</span>
+        <p><strong>{step.lead}</strong> {step.rest}</p>
       </li>
     ))}
   </ol>
-  <div class="cycle__return" aria-hidden="true">
-    <svg viewBox="0 0 24 24" width="22" height="22" focusable="false">
-      <path d="M20 12a8 8 0 1 1-2.34-5.66" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" />
-      <path d="M20 3v5h-5" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" />
-    </svg>
-    <span>and back to step 1</span>
-  </div>
+  <p class="practice-track__return">{locale === 'zh' ? '证据把我们带回新的需求。' : 'and back to step 1'}</p>
 </div>
 
 <style>
-  .cycle__steps {
+  .practice-track {
+    position: relative;
+    background: var(--dark);
+    color: var(--white);
+    border-radius: var(--radius-l);
+    padding: clamp(1.25rem, 3vw, 2.25rem);
+    overflow: hidden;
+  }
+  .practice-track::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    width: 10px;
+    background: var(--gold);
+  }
+  .practice-track ol {
     list-style: none;
     margin: 0;
     padding: 0;
     display: grid;
-    gap: var(--space-s);
-    grid-template-columns: 1fr;
-    counter-reset: none;
   }
-  @media (min-width: 56rem) {
-    .cycle__steps {
-      grid-template-columns: repeat(5, 1fr);
-      gap: var(--space-l);
-    }
-  }
-  .cycle__step {
+  .practice-track li {
     position: relative;
     margin: 0;
-    padding: var(--space-m);
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: var(--radius);
-    display: flex;
-    gap: var(--space-s);
-    align-items: flex-start;
+    padding: var(--space-m) 0 var(--space-m) 4.4rem;
+    border-bottom: 1px solid #474747;
   }
-  @media (min-width: 56rem) {
-    .cycle__step {
-      flex-direction: column;
-    }
-    /* Chevron between steps (decorative) */
-    .cycle__step:not(:last-child)::after {
-      content: '';
-      position: absolute;
-      top: 1.85rem;
-      right: calc(-1 * var(--space-l) / 2 - 0.4rem);
-      width: 0.8rem;
-      height: 0.8rem;
-      border-top: 3px solid var(--maroon);
-      border-right: 3px solid var(--maroon);
-      transform: rotate(45deg);
-    }
-  }
-  .cycle__step p {
-    margin: 0;
-  }
-  .cycle__step strong {
-    color: var(--maroon);
-  }
-  .cycle__num {
-    flex-shrink: 0;
-    display: inline-grid;
-    place-items: center;
-    width: 2.25rem;
-    height: 2.25rem;
-    border-radius: 50%;
-    background: var(--maroon);
-    color: var(--white);
+  .practice-track li:last-child { border-bottom: 0; }
+  .practice-track__number {
+    position: absolute;
+    left: 0;
+    top: 1.15rem;
+    color: var(--gold);
+    font-size: var(--step-2);
     font-weight: 700;
+    line-height: 1;
   }
-  .cycle__return {
-    display: flex;
-    align-items: center;
-    justify-content: flex-end;
-    gap: var(--space-xs);
-    margin-top: var(--space-s);
-    color: var(--maroon);
+  .practice-track__verb {
+    display: block;
+    color: var(--light-gray);
     font-size: var(--step--1);
     font-weight: 700;
+    margin-bottom: var(--space-2xs);
+  }
+  .practice-track p { margin: 0; max-width: 35rem; }
+  .practice-track strong { color: var(--white); }
+  .practice-track__return {
+    margin: var(--space-s) 0 0 4.4rem !important;
+    color: var(--gold);
+    font-weight: 700;
+  }
+  @media (min-width: 64rem) {
+    .practice-track ol { grid-template-columns: repeat(5, 1fr); }
+    .practice-track li {
+      padding: 4.5rem var(--space-m) var(--space-m);
+      border-bottom: 0;
+      border-right: 1px solid #474747;
+      min-height: 17rem;
+    }
+    .practice-track li:last-child { border-right: 0; }
+    .practice-track__number { left: var(--space-m); top: var(--space-m); }
+    .practice-track__return { margin-left: var(--space-m) !important; }
   }
 </style>

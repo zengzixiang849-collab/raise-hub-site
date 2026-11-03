@@ -12,11 +12,21 @@ export const SITE = {
 } as const;
 
 export const NAV = [
-  { href: '/', label: 'Home' },
-  { href: '/about/', label: 'About RAISE' },
-  { href: '/workshops/', label: 'Workshops' },
-  { href: '/projects/', label: 'Projects' },
-  { href: '/resources/', label: 'Resources' },
+  { href: '/#about', label: 'About' },
+  { href: '/#approach', label: 'Approach' },
+  { href: '/#workshops', label: 'Workshops' },
+  { href: '/#projects', label: 'Projects' },
+  { href: '/#resources', label: 'Resources' },
+  { href: '/#contact', label: 'Contact' },
+] as const;
+
+export const NAV_ZH = [
+  { href: '/zh/#about', label: '关于我们' },
+  { href: '/zh/#approach', label: '工作方法' },
+  { href: '/zh/#workshops', label: '工作坊' },
+  { href: '/zh/#projects', label: '项目' },
+  { href: '/zh/#resources', label: '资源' },
+  { href: '/zh/#contact', label: '联系' },
 ] as const;
 
 /**

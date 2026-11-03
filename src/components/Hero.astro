@@ -1,134 +1,167 @@
 ---
-// Homepage hero. The H1 is the primary logo, whose wordmark already contains
-// the tagline "Responsible AI for Teaching and Learning" (alt text carries it),
-// so the tagline is not printed twice. Copy: homepage-about-draft.md HOME §1.
 import { url } from '../lib/url';
+
+interface Props { locale?: 'en' | 'zh' }
+const { locale = 'en' } = Astro.props;
+const zh = locale === 'zh';
 ---
-<section class="hero">
+<section class="hero" aria-labelledby="hero-heading">
   <div class="container hero__grid">
     <div class="hero__text">
-      <h1 class="hero__title">
+      <h1 id="hero-heading" class="hero__title">
         <img
           src={url('/brand/raise_hub_teaching_learning.png')}
-          alt="RAISE Hub — Responsible AI for Teaching and Learning"
+          alt={zh ? 'RAISE Hub——负责任的人工智能教学与学习' : 'RAISE Hub — Responsible AI for Teaching and Learning'}
           width="440"
           height="149"
           fetchpriority="high"
         />
       </h1>
       <p class="hero__lede">
-        Based at the HNU–ASU Joint International College (HAIC), RAISE Hub helps faculty, students and
-        teaching assistants use AI thoughtfully to address real teaching and learning needs. We develop
-        useful, reusable tools — and the human judgment needed to use them responsibly.
+        {zh
+          ? 'RAISE Hub 位于海南大学亚利桑那州立大学联合国际旅游学院（HAIC），帮助教师、学生和助教审慎地使用人工智能，回应真实的教学与学习需求。'
+          : 'Based at the HNU–ASU Joint International College (HAIC), RAISE Hub helps faculty, students and teaching assistants use AI thoughtfully to address real teaching and learning needs. We develop useful, reusable tools — and the human judgment needed to use them responsibly.'}
       </p>
       <div class="hero__actions">
-        <a class="button button--primary" href={url('/workshops/')}>Explore workshops</a>
-        <a class="button button--secondary" href="#how-we-work">How we work</a>
+        <a class="button button--primary" href="#workshops">{zh ? '了解工作坊' : 'Explore workshops'}</a>
+        <a class="hero__text-link" href="#approach">{zh ? '了解工作方法' : 'How we work'}</a>
       </div>
     </div>
 
-    <div class="hero__panel" aria-hidden="true">
-      <ul>
-        <li>Build</li>
-        <li>Evaluate</li>
-        <li>Improve</li>
-      </ul>
+    <div class="hero__media" role="img" aria-label={zh ? '教学工作坊照片待审核的位置' : 'Reserved space for approved workshop photography'}>
+      <div class="hero__media-top">
+        <span>{zh ? '教学实践现场' : 'Teaching in practice'}</span>
+        <span>HAIC</span>
+      </div>
+      <div class="hero__scene" aria-hidden="true">
+        <span class="hero__screen"></span>
+        <span class="hero__person hero__person--one"></span>
+        <span class="hero__person hero__person--two"></span>
+        <span class="hero__person hero__person--three"></span>
+        <span class="hero__line"></span>
+      </div>
+      <p>{zh ? '照片将在审核和确认使用许可后加入。' : 'Photography will be added after review and permission checks.'}</p>
     </div>
   </div>
 </section>
 
 <style>
   .hero {
-    padding-block: var(--space-xl) var(--space-2xl);
-    background:
-      linear-gradient(180deg, var(--surface) 0%, var(--surface) 60%, var(--surface-alt) 100%);
+    padding-block: clamp(3.5rem, 8vw, 7.5rem);
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
   }
   .hero__grid {
     display: grid;
     gap: var(--space-xl);
     align-items: center;
   }
-  @media (min-width: 56rem) {
+  @media (min-width: 58rem) {
     .hero__grid {
-      grid-template-columns: 1.35fr 1fr;
+      grid-template-columns: minmax(0, 1.04fr) minmax(24rem, 0.96fr);
     }
   }
-  .hero__title {
-    margin: 0 0 var(--space-m);
-  }
+  .hero__title { margin: 0 0 var(--space-l); }
   .hero__title img {
-    width: min(100%, 440px);
-    height: auto;
-    /* the PNG has transparent padding on the left; align the letters with the text */
+    width: min(100%, 500px);
     margin-left: -4.5%;
   }
   .hero__lede {
     font-size: var(--step-1);
-    line-height: 1.55;
+    line-height: 1.65;
     margin-bottom: var(--space-l);
   }
   .hero__actions {
     display: flex;
     flex-wrap: wrap;
-    gap: var(--space-s);
-  }
-
-  /* Decorative panel: maroon block, white words, large gold squares (allowed:
-     large decorative blocks; gold is not used as text on light). */
-  .hero__panel {
-    background: var(--maroon);
-    border-radius: var(--radius);
-    padding: var(--space-xl) var(--space-l);
-    box-shadow: 0 18px 40px -24px rgba(140, 29, 64, 0.55);
-    position: relative;
-    overflow: hidden;
-  }
-  .hero__panel::after {
-    content: '';
-    position: absolute;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    height: 12px;
-    background: var(--gold);
-  }
-  .hero__panel ul {
-    list-style: none;
-    margin: 0;
-    padding: 0;
-    display: grid;
-    gap: var(--space-m);
-  }
-  .hero__panel li {
-    margin: 0;
-    display: flex;
     align-items: center;
     gap: var(--space-m);
-    color: var(--white);
-    font-size: var(--step-3);
+  }
+  .hero__text-link {
     font-weight: 700;
-    line-height: 1;
+    text-underline-offset: 0.3em;
   }
-  .hero__panel li::before {
+  .hero__media {
+    min-height: 28rem;
+    padding: var(--space-m);
+    display: grid;
+    grid-template-rows: auto 1fr auto;
+    gap: var(--space-m);
+    background: var(--maroon);
+    color: var(--white);
+    border-radius: var(--radius-l);
+    overflow: hidden;
+    box-shadow: 0 24px 50px -38px rgba(38, 38, 38, 0.75);
+  }
+  .hero__media-top {
+    display: flex;
+    justify-content: space-between;
+    gap: var(--space-m);
+    font-weight: 700;
+  }
+  .hero__scene {
+    position: relative;
+    min-height: 18rem;
+    background: var(--dark);
+    border-radius: var(--radius);
+    overflow: hidden;
+  }
+  .hero__screen {
+    position: absolute;
+    width: 48%;
+    height: 38%;
+    top: 12%;
+    left: 10%;
+    background: var(--surface-alt);
+    border-left: 10px solid var(--gold);
+  }
+  .hero__screen::before,
+  .hero__screen::after {
     content: '';
-    width: 0.8em;
-    height: 0.8em;
-    flex-shrink: 0;
+    position: absolute;
+    left: 12%;
+    height: 8%;
+    background: var(--maroon);
+  }
+  .hero__screen::before { top: 28%; width: 65%; }
+  .hero__screen::after { top: 52%; width: 45%; }
+  .hero__person {
+    position: absolute;
+    bottom: -8%;
+    width: 21%;
+    aspect-ratio: 0.64;
+    background: #4b4a47;
+    border-radius: 48% 48% 10% 10%;
+  }
+  .hero__person::before {
+    content: '';
+    position: absolute;
+    width: 48%;
+    aspect-ratio: 1;
+    left: 26%;
+    top: -19%;
+    border-radius: 50%;
+    background: #6b6964;
+  }
+  .hero__person--one { left: 9%; transform: scale(0.78); transform-origin: bottom; }
+  .hero__person--two { left: 39%; }
+  .hero__person--three { right: 7%; transform: scale(0.86); transform-origin: bottom; }
+  .hero__line {
+    position: absolute;
+    right: -8%;
+    top: 17%;
+    width: 42%;
+    height: 9px;
     background: var(--gold);
-    border-radius: 3px;
+    transform: rotate(-8deg);
   }
-  .hero__panel li:nth-child(2) {
-    padding-left: 1.2em;
+  .hero__media p {
+    margin: 0;
+    color: var(--white);
+    font-size: var(--step--1);
   }
-  .hero__panel li:nth-child(3) {
-    padding-left: 2.4em;
-  }
-  @media (max-width: 55.99rem) {
-    .hero__panel {
-      padding: var(--space-l);
-    }
-    .hero__panel li {
-      font-size: var(--step-2);
-    }
+  @media (max-width: 36rem) {
+    .hero__media { min-height: 22rem; }
+    .hero__scene { min-height: 14rem; }
   }
 </style>

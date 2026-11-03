@@ -1,13 +1,15 @@
 ---
-import { NAV } from '../lib/site';
-import { stripBase, url } from '../lib/url';
-
-const path = stripBase(Astro.url.pathname);
-const isCurrent = (href: string) => (href === '/' ? path === '/' : path.startsWith(href));
+import { NAV, NAV_ZH } from '../lib/site';
+import { url } from '../lib/url';
+interface Props { locale?: 'en' | 'zh' }
+const { locale = 'en' } = Astro.props;
+const nav = locale === 'zh' ? NAV_ZH : NAV;
+const home = locale === 'zh' ? '/zh/' : '/';
+const switchHref = locale === 'zh' ? '/' : '/zh/';
 ---
 <header class="site-header">
   <div class="container site-header__inner">
-    <a class="site-header__logo" href={url('/')}>
+    <a class="site-header__logo" href={url(home)}>
       <!-- Compact (no-tagline) logo: brand rule for widths under ~200px. -->
       <img
         src={url('/brand/raise_hub_no_tagline.png')}
@@ -16,17 +18,20 @@ const isCurrent = (href: string) => (href === '/' ? path === '/' : path.startsWi
         height="45"
       />
     </a>
-    <nav class="site-nav" aria-label="Main">
+    <nav class="site-nav" aria-label={locale === 'zh' ? '主导航' : 'Main'}>
       <ul>
-        {NAV.map((item) => (
+        {nav.map((item) => (
           <li>
-            <a href={url(item.href)} aria-current={isCurrent(item.href) ? 'page' : undefined}>
+            <a href={url(item.href)}>
               {item.label}
             </a>
           </li>
         ))}
       </ul>
     </nav>
+    <a class="language-switch" href={url(switchHref)} hreflang={locale === 'zh' ? 'en' : 'zh-CN'}>
+      {locale === 'zh' ? 'EN' : '中文'}
+    </a>
   </div>
 </header>
 
@@ -34,12 +39,15 @@ const isCurrent = (href: string) => (href === '/' ? path === '/' : path.startsWi
   .site-header {
     background: var(--surface);
     border-bottom: 1px solid var(--border);
+    position: sticky;
+    top: 0;
+    z-index: 50;
   }
   .site-header__inner {
     display: flex;
     flex-wrap: wrap;
     align-items: center;
-    justify-content: flex-start;
+    justify-content: space-between;
     gap: var(--space-s) var(--space-l);
     padding-block: var(--space-s);
   }
@@ -54,7 +62,7 @@ const isCurrent = (href: string) => (href === '/' ? path === '/' : path.startsWi
   /* Nav starts right after the logo and fills the rest of the header, items evenly spaced. */
   .site-nav {
     flex: 1 1 28rem;
-    max-width: 46rem;
+    max-width: 49rem;
     margin-inline-start: var(--space-m);
   }
   .site-nav ul {
@@ -81,9 +89,17 @@ const isCurrent = (href: string) => (href === '/' ? path === '/' : path.startsWi
     color: var(--maroon);
     border-bottom-color: var(--border);
   }
-  .site-nav a[aria-current='page'] {
-    color: var(--maroon);
-    border-bottom-color: var(--maroon);
+  .language-switch {
+    flex-shrink: 0;
+    padding: 0.4rem 0.65rem;
+    border: 1px solid var(--maroon);
+    border-radius: var(--radius-s);
+    font-weight: 700;
+    text-decoration: none;
+  }
+  .language-switch:hover {
+    background: var(--maroon);
+    color: var(--white);
   }
   @media (max-width: 40rem) {
     .site-nav {
@@ -93,6 +109,13 @@ const isCurrent = (href: string) => (href === '/' ? path === '/' : path.startsWi
     }
     .site-nav ul {
       margin-inline: -0.65rem;
+      justify-content: flex-start;
+      overflow-x: auto;
+      flex-wrap: nowrap;
+      padding-bottom: 0.2rem;
+    }
+    .site-nav a {
+      white-space: nowrap;
     }
   }
 </style>

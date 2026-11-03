@@ -1,7 +1,11 @@
 ---
-import { NAV, SITE } from '../lib/site';
+import { NAV, NAV_ZH, SITE } from '../lib/site';
 import { url } from '../lib/url';
 import ReviewPending from './ReviewPending.astro';
+interface Props { locale?: 'en' | 'zh' }
+const { locale = 'en' } = Astro.props;
+const zh = locale === 'zh';
+const nav = zh ? NAV_ZH : NAV;
 ---
 <footer class="site-footer">
   <div class="container site-footer__grid">
@@ -20,16 +24,16 @@ import ReviewPending from './ReviewPending.astro';
     </div>
 
     <nav class="site-footer__nav" aria-label="Footer">
-      <h2 class="site-footer__heading">Explore</h2>
+      <h2 class="site-footer__heading">{zh ? '浏览' : 'Explore'}</h2>
       <ul>
-        {NAV.map((item) => (
+        {nav.map((item) => (
           <li><a href={url(item.href)}>{item.label}</a></li>
         ))}
       </ul>
     </nav>
 
     <div class="site-footer__contact">
-      <h2 class="site-footer__heading">Contact</h2>
+      <h2 class="site-footer__heading">{zh ? '联系' : 'Contact'}</h2>
       <p><a href={`mailto:${SITE.contactEmail}`}>{SITE.contactEmail}</a></p>
       <ReviewPending item="A5" note="Confirm this email may appear publicly, and whether to add office hours or a location." />
     </div>
@@ -37,9 +41,9 @@ import ReviewPending from './ReviewPending.astro';
 
   <div class="container site-footer__legal">
     <p>
-      AI can make mistakes. Verify all information before you use it. Workshop examples use fictional
-      course materials. Follow ASU policy on generative AI, accessibility and student data. No endorsement
-      of any AI vendor or product is implied.
+      {zh
+        ? '人工智能可能出错。使用任何信息前请进行核实。工作坊示例使用虚构课程材料。请遵循 ASU 关于生成式人工智能、无障碍和学生数据的政策。本网站不构成对任何人工智能厂商或产品的认可。'
+        : 'AI can make mistakes. Verify all information before you use it. Workshop examples use fictional course materials. Follow ASU policy on generative AI, accessibility and student data. No endorsement of any AI vendor or product is implied.'}
     </p>
   </div>
 </footer>

@@ -82,7 +82,8 @@ for (const file of pages) {
   if (!title) fail(page, 'missing <title>');
   else titles.set(title, [...(titles.get(title) || []), page]);
   if (!/<meta name="description" content="[^"]+"/.test(html)) fail(page, 'missing meta description');
-  if (!/<html lang="en"/.test(html)) fail(page, 'missing <html lang="en">');
+  const expectedLang = page.startsWith('/zh/') ? 'zh-CN' : 'en';
+  if (!new RegExp(`<html lang="${expectedLang}"`).test(html)) fail(page, `missing <html lang="${expectedLang}">`);
 
   // Images: every <img> needs an alt attribute
   for (const [tag] of html.matchAll(/<img\b[^>]*>/g)) {
