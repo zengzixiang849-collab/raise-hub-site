@@ -11,6 +11,7 @@ import {
   indexFromScreenAngle,
   dragToPos,
   keyToIndex,
+  wheelToIndex,
   slideLayout,
 } from './carousel-math.js';
 
@@ -39,6 +40,7 @@ export function initCarousel(root) {
   let pos = index;
   let raf = 0;
   let suppressClick = false;
+  let wheelLocked = false;
 
   const titleOf = (i) => slides[i].dataset.title ?? '';
 
@@ -162,7 +164,26 @@ export function initCarousel(root) {
   );
   bindDrag(stage, () => (slides[0].offsetWidth * SLIDE_SHIFT) / 100);
 
-  // A tap on a side poster brings it to the centre; a drag never follows a link.
+  // Wheel over the poster stage to move one item. At either end the event is
+  // not cancelled, so normal page scrolling resumes instead of trapping it.
+  stage.addEventListener(
+    'wheel',
+    (e) => {
+      const delta = Math.abs(e.deltaX) > Math.abs(e.deltaY) ? e.deltaX : e.deltaY;
+      const target = wheelToIndex(index, delta, n);
+      if (target === index) return;
+      e.preventDefault();
+      if (wheelLocked) return;
+      wheelLocked = true;
+      goTo(target);
+      window.setTimeout(() => {
+        wheelLocked = false;
+      }, 240);
+    },
+    { passive: false },
+  );
+
+  // Every poster is a direct link. A drag never follows that link.
   stage.addEventListener(
     'click',
     (e) => {
@@ -170,12 +191,6 @@ export function initCarousel(root) {
         e.preventDefault();
         e.stopPropagation();
         return;
-      }
-      const slide = e.target.closest('[data-slide]');
-      const i = slide ? slides.indexOf(slide) : -1;
-      if (i >= 0 && i !== index) {
-        e.preventDefault();
-        goTo(i);
       }
     },
     true,

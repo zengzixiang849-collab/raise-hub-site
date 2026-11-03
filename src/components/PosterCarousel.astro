@@ -67,7 +67,11 @@ for (let j = -PAD; j <= (n - 1) * 5 + PAD; j++) {
         aria-roledescription="slide"
         aria-label={`${i + 1} of ${n}: ${it.title}`}
       >
-        <figure class="slide__figure">
+        <a
+          class="slide__poster-link"
+          href={url(`/workshops/${it.id}/`)}
+          aria-label={`View workshop: ${it.title}`}
+        >
           <img
             class="slide__img"
             src={it.src}
@@ -79,11 +83,7 @@ for (let j = -PAD; j <= (n - 1) * 5 + PAD; j++) {
             loading={i === start || i === start - 1 || i === start + 1 ? 'eager' : 'lazy'}
             draggable="false"
           />
-          <figcaption class="slide__caption">
-            <span class="badge">{it.audience}</span>
-            <a class="slide__link" href={url(`/workshops/${it.id}/`)}>{it.title}</a>
-          </figcaption>
-        </figure>
+        </a>
       </li>
     ))}
   </ul>
@@ -143,12 +143,12 @@ for (let j = -PAD; j <= (n - 1) * 5 + PAD; j++) {
 
 <style>
   .carousel {
-    --pw: min(18rem, 52%);
+    --pw: min(15rem, 48%);
     overflow-x: clip;
   }
   @media (max-width: 55.99rem) {
     .carousel {
-      --pw: min(18rem, 64%); /* single column: the middle poster can be larger */
+      --pw: min(15rem, 66%); /* single column: the middle poster can be larger */
     }
   }
 
@@ -156,7 +156,7 @@ for (let j = -PAD; j <= (n - 1) * 5 + PAD; j++) {
   .carousel__track {
     list-style: none;
     margin: 0;
-    padding: var(--space-s) var(--space-2xs) var(--space-m);
+    padding: var(--space-xs) var(--space-2xs) var(--space-s);
     display: flex;
     gap: var(--space-m);
     overflow-x: auto;
@@ -164,11 +164,14 @@ for (let j = -PAD; j <= (n - 1) * 5 + PAD; j++) {
   }
   .slide {
     margin: 0;
-    flex: 0 0 min(16rem, 72%);
+    flex: 0 0 min(14rem, 72%);
     scroll-snap-align: center;
   }
-  .slide__figure {
-    margin: 0;
+  .slide__poster-link {
+    display: block;
+    border-radius: 4px;
+    text-decoration: none;
+    cursor: pointer;
   }
   .slide__img {
     display: block;
@@ -181,18 +184,6 @@ for (let j = -PAD; j <= (n - 1) * 5 + PAD; j++) {
     background: var(--surface-alt);
     -webkit-user-drag: none;
   }
-  .slide__caption {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: baseline;
-    gap: var(--space-2xs) var(--space-xs);
-    margin-top: var(--space-s);
-  }
-  .slide__link {
-    font-weight: 700;
-    line-height: 1.3;
-  }
-
   /* ---------- With JavaScript ---------- */
   .is-enhanced .carousel__track {
     display: grid;
@@ -201,7 +192,7 @@ for (let j = -PAD; j <= (n - 1) * 5 + PAD; j++) {
     overflow: visible;
     scroll-snap-type: none;
     perspective: 1400px;
-    padding-block: var(--space-m) var(--space-s);
+    padding-block: var(--space-s) var(--space-xs);
     touch-action: pan-y;
     user-select: none;
     cursor: grab;
@@ -225,13 +216,6 @@ for (let j = -PAD; j <= (n - 1) * 5 + PAD; j++) {
   .is-enhanced:not(.is-dragging) .slide {
     transition: none;
   }
-  /* only the poster in the middle shows its caption */
-  .is-enhanced .slide__caption {
-    transition: opacity 150ms ease;
-  }
-  .is-enhanced .slide:not(.is-current) .slide__caption {
-    opacity: 0;
-  }
   .is-enhanced .slide:not(.is-current) {
     cursor: pointer;
   }
@@ -241,7 +225,7 @@ for (let j = -PAD; j <= (n - 1) * 5 + PAD; j++) {
     display: flex;
     align-items: center;
     gap: var(--space-s);
-    margin-top: var(--space-xs);
+    margin-top: 0;
   }
   .controls[hidden] {
     display: none;

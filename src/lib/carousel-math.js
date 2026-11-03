@@ -43,6 +43,12 @@ export function keyToIndex(key, index, n) {
   }
 }
 
+/** One poster step for a mouse-wheel gesture; tiny trackpad noise is ignored. */
+export function wheelToIndex(index, delta, n, threshold = 4) {
+  if (Math.abs(delta) < threshold) return index;
+  return clamp(index + (delta > 0 ? 1 : -1), 0, n - 1);
+}
+
 /** Where one slide sits, given its offset from the current position (slide index − pos). */
 export function slideLayout(offset) {
   const a = Math.abs(offset);
