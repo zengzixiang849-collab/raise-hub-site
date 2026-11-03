@@ -4,7 +4,7 @@ import BaseLayout from '../layouts/BaseLayout.astro';
 import Hero from '../components/Hero.astro';
 import Cycle from '../components/Cycle.astro';
 import FiveDimensions from '../components/FiveDimensions.astro';
-import WorkshopCard from '../components/WorkshopCard.astro';
+import WorkshopFeatureRow from '../components/WorkshopFeatureRow.astro';
 import ProjectCard from '../components/ProjectCard.astro';
 import ReviewPending from '../components/ReviewPending.astro';
 import { RESOURCES } from '../lib/resources';
@@ -15,7 +15,6 @@ const workshops = (await getCollection('workshops'))
   .filter((w) => w.data.status === 'delivered')
   .sort((a, b) => a.data.order - b.data.order);
 const projects = (await getCollection('projects')).sort((a, b) => a.data.order - b.data.order);
-const featuredWorkshops = workshops.slice(0, 4);
 const byId = Object.fromEntries(workshops.map((w) => [w.id, w]));
 const link = (id: string, label?: string) => ({
   href: url(`/workshops/${id}/`),
@@ -129,8 +128,8 @@ const AUDIENCES = [
         <h2 id="workshops-heading">Featured workshops</h2>
         <p>Our workshops introduce these habits and offer a route into project work and support. Depending on the session, participants observe a worked example, define a task, build something, or test and revise it.</p>
       </div>
-      <div class="featured-grid">
-        {featuredWorkshops.map((workshop) => <WorkshopCard workshop={workshop} />)}
+      <div class="workshop-features">
+        {workshops.map((workshop) => <WorkshopFeatureRow workshop={workshop} />)}
       </div>
       <p class="section-action"><a class="button button--secondary" href={url('/workshops/')}>See all workshops</a></p>
     </div>
@@ -255,11 +254,7 @@ const AUDIENCES = [
   .dimensions-band a { color: var(--white); font-weight: 700; }
   .dimensions-band :focus-visible { outline-color: var(--gold); }
 
-  .featured-grid { display: grid; gap: var(--space-m); }
-  @media (min-width: 46rem) {
-    .featured-grid { grid-template-columns: repeat(2, 1fr); }
-    .featured-grid > :global(:first-child) { grid-column: 1 / -1; }
-  }
+  .workshop-features { margin-top: calc(-1 * var(--space-s)); }
   .section-action { margin: var(--space-l) 0 0; }
 
   .projects-band { background: var(--dark); color: var(--white); }

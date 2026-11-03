@@ -1,0 +1,170 @@
+---
+import type { CollectionEntry } from 'astro:content';
+import { url } from '../lib/url';
+import { POSTER_WIDTHS, POSTER_RATIO, assertPosterFiles } from '../lib/posters';
+
+interface Props {
+  workshop: CollectionEntry<'workshops'>;
+  title?: string;
+  summary?: string;
+  linkLabel?: string;
+}
+
+const { workshop, title = workshop.data.title, summary = workshop.data.summary, linkLabel = 'View workshop' } = Astro.props;
+const { data, id } = workshop;
+let poster: { src: string; srcset: string; alt: string } | undefined;
+
+if (data.poster) {
+  assertPosterFiles(data.poster.image, `src/content/workshops/${id}.md`);
+  const base = `/posters/${data.poster.image}`;
+  poster = {
+    src: url(`${base}-800.webp`),
+    srcset: POSTER_WIDTHS.map((px) => `${url(`${base}-${px}.webp`)} ${px}w`).join(', '),
+    alt: data.poster.alt,
+  };
+}
+---
+<article class="workshop-feature">
+  <div class:list={['workshop-feature__media', { 'workshop-feature__media--placeholder': !poster }]}>
+    {poster ? (
+      <img
+        src={poster.src}
+        srcset={poster.srcset}
+        sizes="(min-width: 58rem) 31vw, 100vw"
+        width="800"
+        height={Math.round(800 * POSTER_RATIO)}
+        alt={poster.alt}
+        loading="lazy"
+      />
+    ) : (
+      <div class="workshop-feature__placeholder" role="img" aria-label={`Workshop image pending review for ${data.title}`}>
+        <span class="workshop-feature__raise" aria-hidden="true">R<span>AI</span>SE</span>
+        <small>Workshop image pending review</small>
+      </div>
+    )}
+  </div>
+
+  <div class="workshop-feature__content">
+    <p class="workshop-feature__meta">
+      <span>{data.audience}</span>
+      {data.sessions?.length && <span>{data.sessions.length} sessions</span>}
+      <span class="workshop-feature__formats">
+        {data.formats.map((format) => <span>{format}</span>)}
+      </span>
+    </p>
+    <h3><a href={url(`/workshops/${id}/`)}>{title}</a></h3>
+    <p class="workshop-feature__summary">{summary}</p>
+    <a class="workshop-feature__link" href={url(`/workshops/${id}/`)}>{linkLabel}</a>
+  </div>
+</article>
+
+<style>
+  .workshop-feature {
+    display: grid;
+    gap: var(--space-l);
+    padding-block: var(--space-l);
+    border-top: 1px dashed #b8b2a7;
+    align-items: center;
+  }
+  .workshop-feature:last-child {
+    border-bottom: 1px dashed #b8b2a7;
+  }
+  .workshop-feature__media {
+    min-width: 0;
+    height: clamp(15rem, 31vw, 23rem);
+    display: grid;
+    place-items: center;
+    overflow: hidden;
+    background: var(--surface-alt);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+  }
+  .workshop-feature__media img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+  }
+  .workshop-feature__media--placeholder {
+    background: var(--maroon);
+    border-color: var(--maroon);
+  }
+  .workshop-feature__placeholder {
+    width: 100%;
+    height: 100%;
+    display: grid;
+    grid-template-rows: 1fr auto;
+    place-items: center;
+    padding: var(--space-l);
+    color: var(--white);
+    border-bottom: 10px solid var(--gold);
+  }
+  .workshop-feature__raise {
+    font-size: clamp(2.7rem, 7vw, 5rem);
+    font-weight: 700;
+    letter-spacing: -0.08em;
+  }
+  .workshop-feature__raise span {
+    display: inline-block;
+    color: var(--gold);
+    transform: translateY(-30%);
+  }
+  .workshop-feature__placeholder small {
+    justify-self: start;
+    color: var(--white);
+    font-weight: 700;
+  }
+  .workshop-feature__content {
+    min-width: 0;
+  }
+  .workshop-feature__meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-xs) var(--space-m);
+    margin-bottom: var(--space-s);
+    color: var(--gray);
+    font-size: var(--step--1);
+    font-weight: 700;
+  }
+  .workshop-feature__meta > span:first-child {
+    padding: 0.18rem 0.65rem;
+    background: var(--maroon);
+    color: var(--white);
+    border-radius: 999px;
+  }
+  .workshop-feature__formats {
+    display: inline-flex;
+    flex-wrap: wrap;
+    gap: var(--space-xs);
+  }
+  .workshop-feature__formats span + span::before {
+    content: '·';
+    margin-right: var(--space-xs);
+  }
+  .workshop-feature h3 {
+    margin-bottom: var(--space-s);
+    font-size: var(--step-2);
+  }
+  .workshop-feature h3 a {
+    color: var(--ink);
+    text-decoration: none;
+  }
+  .workshop-feature h3 a:hover {
+    color: var(--maroon);
+    text-decoration: underline;
+  }
+  .workshop-feature__summary {
+    margin-bottom: var(--space-m);
+    color: var(--gray);
+    font-size: var(--step-1);
+  }
+  .workshop-feature__link {
+    font-weight: 700;
+  }
+  @media (min-width: 58rem) {
+    .workshop-feature {
+      grid-template-columns: minmax(16rem, 0.72fr) minmax(0, 1.55fr);
+      gap: clamp(2rem, 5vw, 4.5rem);
+      padding-block: var(--space-xl);
+    }
+  }
+</style>
