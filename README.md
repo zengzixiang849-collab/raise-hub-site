@@ -70,6 +70,7 @@ All visible text must come from the approved planning documents (`../planning/co
    - `formats`: one or more of `Observe` · `Define` · `Build` · `Test and revise`
    - `relatedProjects`: project file names without `.md` (e.g. `[syllabot]`); `relatedResources`: `decide` · `check` · `choose-a-task` · `instructions` · `before-sharing` · `five-dimensions` · `links`. **A misspelled id stops the build** and lists the valid ones.
    - `fictionalMaterials: true` only if the session used fictional course materials.
+   - Optional `photo`: add `image`, descriptive `alt`, and the internal `source` path after selecting an authentic workshop image. The source is not rendered. Record the selection in `PHOTO-SOURCES.md`, then run `node scripts/export-selected-photos.mjs` to create metadata-free WebP variants.
    - `date`: leave it out unless Annus has confirmed it.
    - `reviewStatus: draft` until Annus approves.
 3. **Quoting:** put every text value in double quotes. Inside the text, use curly quotes “like this” (straight `"` would end the value). An apostrophe (`'`) is fine.
@@ -120,7 +121,8 @@ The project rules for anyone editing this site, human or AI, are in `../CLAUDE.m
 
 - Use the five evaluation dimensions word for word.
 - No attendance, impact or deployment claims.
-- No photos, downloads or tool links until they have been approved.
+- The local draft may use selected authentic workshop photos; public release still requires Annus's approval. No AI-generated or AI-edited workshop photos.
+- No downloads or tool links until they have been approved.
 - No external fonts, scripts or trackers.
 - Follow the RAISE Brand Guide.
 

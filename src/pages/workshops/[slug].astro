@@ -4,6 +4,7 @@ import BaseLayout from '../../layouts/BaseLayout.astro';
 import { url } from '../../lib/url';
 import { RESOURCES } from '../../lib/resources';
 import { resolveRefs } from '../../lib/refs';
+import { PHOTO_WIDTHS, PHOTO_RATIO, assertPhotoFiles } from '../../lib/photos';
 
 export async function getStaticPaths() {
   const workshops = await getCollection('workshops');
@@ -15,6 +16,17 @@ interface Props {
 }
 const { workshop } = Astro.props;
 const { data } = workshop;
+let photo: { src: string; srcset: string; alt: string } | undefined;
+
+if (data.photo) {
+  assertPhotoFiles(data.photo.image, `src/content/workshops/${workshop.id}.md`);
+  const base = `/photos/${data.photo.image}`;
+  photo = {
+    src: url(`${base}-1200.webp`),
+    srcset: PHOTO_WIDTHS.map((width) => `${url(`${base}-${width}.webp`)} ${width}w`).join(', '),
+    alt: data.photo.alt,
+  };
+}
 
 // Related projects and resource guides — an unknown id fails the build with the file and field.
 const file = `src/content/workshops/${workshop.id}.md`;
@@ -39,6 +51,18 @@ const resources = resolveRefs(data.relatedResources, RESOURCES, file, 'relatedRe
         </ul>
         {data.fictionalMaterials && (
           <p class="note">Examples in this workshop use fictional course materials.</p>
+        )}
+        {photo && (
+          <figure class="workshop-hero__photo">
+            <img
+              src={photo.src}
+              srcset={photo.srcset}
+              sizes="(min-width: 64rem) 64rem, 100vw"
+              width="1200"
+              height={Math.round(1200 * PHOTO_RATIO)}
+              alt={photo.alt}
+            />
+          </figure>
         )}
       </div>
     </header>
@@ -132,6 +156,17 @@ const resources = resolveRefs(data.relatedResources, RESOURCES, file, 'relatedRe
     margin-top: var(--space-m);
     font-size: var(--step--1);
     color: var(--gray);
+  }
+  .workshop-hero__photo {
+    margin: var(--space-xl) 0 0;
+    overflow: hidden;
+    border-radius: var(--radius-l);
+    border-bottom: 8px solid var(--gold);
+  }
+  .workshop-hero__photo img {
+    width: 100%;
+    max-height: 34rem;
+    object-fit: cover;
   }
   .workshop-body {
     max-width: 52rem;

@@ -1,9 +1,14 @@
 ---
 import { url } from '../lib/url';
+import { PHOTO_WIDTHS, PHOTO_RATIO, assertPhotoFiles } from '../lib/photos';
 
 interface Props { locale?: 'en' | 'zh' }
 const { locale = 'en' } = Astro.props;
 const zh = locale === 'zh';
+const heroImage = 'hero-workshop';
+assertPhotoFiles(heroImage, 'src/components/Hero.astro');
+const heroBase = `/photos/${heroImage}`;
+const heroSrcset = PHOTO_WIDTHS.map((width) => `${url(`${heroBase}-${width}.webp`)} ${width}w`).join(', ');
 ---
 <section class="hero" aria-labelledby="hero-heading">
   <div class="container hero__grid">
@@ -28,20 +33,23 @@ const zh = locale === 'zh';
       </div>
     </div>
 
-    <div class="hero__media" role="img" aria-label={zh ? '教学工作坊照片待审核的位置' : 'Reserved space for approved workshop photography'}>
-      <div class="hero__media-top">
+    <figure class="hero__media">
+      <picture>
+        <img
+          src={url(`${heroBase}-1200.webp`)}
+          srcset={heroSrcset}
+          sizes="(min-width: 58rem) 46vw, 100vw"
+          width="1200"
+          height={Math.round(1200 * PHOTO_RATIO)}
+          alt={zh ? '学生在 RAISE Hub 工作坊中使用笔记本电脑完成课堂活动' : 'Students use laptops for a classroom activity during a RAISE Hub workshop'}
+          fetchpriority="high"
+        />
+      </picture>
+      <figcaption>
         <span>{zh ? '教学实践现场' : 'Teaching in practice'}</span>
-        <span>HAIC</span>
-      </div>
-      <div class="hero__scene" aria-hidden="true">
-        <span class="hero__screen"></span>
-        <span class="hero__person hero__person--one"></span>
-        <span class="hero__person hero__person--two"></span>
-        <span class="hero__person hero__person--three"></span>
-        <span class="hero__line"></span>
-      </div>
-      <p>{zh ? '照片将在审核和确认使用许可后加入。' : 'Photography will be added after review and permission checks.'}</p>
-    </div>
+        <span>RAISE Hub workshop</span>
+      </figcaption>
+    </figure>
   </div>
 </section>
 
@@ -82,86 +90,44 @@ const zh = locale === 'zh';
     text-underline-offset: 0.3em;
   }
   .hero__media {
+    position: relative;
     min-height: 20rem;
-    padding: var(--space-m);
-    display: grid;
-    grid-template-rows: auto 1fr auto;
-    gap: var(--space-m);
+    margin: 0;
     background: var(--maroon);
-    color: var(--white);
     border-radius: var(--radius-l);
     overflow: hidden;
     box-shadow: 0 24px 50px -38px rgba(38, 38, 38, 0.75);
+    border-bottom: 8px solid var(--gold);
   }
-  .hero__media-top {
+  .hero__media picture,
+  .hero__media img {
+    width: 100%;
+    height: 100%;
+    min-height: 20rem;
+    display: block;
+  }
+  .hero__media img {
+    object-fit: cover;
+    object-position: center;
+  }
+  .hero__media figcaption {
+    position: absolute;
+    inset: auto var(--space-m) var(--space-m) var(--space-m);
     display: flex;
     justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
     gap: var(--space-m);
-    font-weight: 700;
-  }
-  .hero__scene {
-    position: relative;
-    min-height: 13rem;
-    background: var(--dark);
-    border-radius: var(--radius);
-    overflow: hidden;
-  }
-  .hero__screen {
-    position: absolute;
-    width: 48%;
-    height: 38%;
-    top: 12%;
-    left: 10%;
-    background: var(--surface-alt);
-    border-left: 10px solid var(--gold);
-  }
-  .hero__screen::before,
-  .hero__screen::after {
-    content: '';
-    position: absolute;
-    left: 12%;
-    height: 8%;
-    background: var(--maroon);
-  }
-  .hero__screen::before { top: 28%; width: 65%; }
-  .hero__screen::after { top: 52%; width: 45%; }
-  .hero__person {
-    position: absolute;
-    bottom: -8%;
-    width: 21%;
-    aspect-ratio: 0.64;
-    background: #4b4a47;
-    border-radius: 48% 48% 10% 10%;
-  }
-  .hero__person::before {
-    content: '';
-    position: absolute;
-    width: 48%;
-    aspect-ratio: 1;
-    left: 26%;
-    top: -19%;
-    border-radius: 50%;
-    background: #6b6964;
-  }
-  .hero__person--one { left: 9%; transform: scale(0.78); transform-origin: bottom; }
-  .hero__person--two { left: 39%; }
-  .hero__person--three { right: 7%; transform: scale(0.86); transform-origin: bottom; }
-  .hero__line {
-    position: absolute;
-    right: -8%;
-    top: 17%;
-    width: 42%;
-    height: 9px;
-    background: var(--gold);
-    transform: rotate(-8deg);
-  }
-  .hero__media p {
-    margin: 0;
+    padding: 0.65rem 0.85rem;
+    background: rgba(110, 21, 50, 0.94);
     color: var(--white);
+    border-radius: var(--radius);
+    font-weight: 700;
     font-size: var(--step--1);
   }
   @media (max-width: 36rem) {
-    .hero__media { min-height: 22rem; }
-    .hero__scene { min-height: 14rem; }
+    .hero__media,
+    .hero__media picture,
+    .hero__media img { min-height: 17rem; }
   }
 </style>

@@ -14,6 +14,10 @@ practise: "A task map of a real assignment, built in pairs. Includes the riskies
 leaveWith: "The same gate, applied to every assignment: your name is on the work in every box."
 relatedProjects: []
 relatedResources: [decide]
+photo:
+  image: "pick-the-right-job-workshop"
+  alt: "A laptop displays the bilingual task instructions while students work during the Pick the Right Job for AI workshop."
+  source: "photo-review/raw/2026.9.18-The second workshop-Pick the Right Job for AI/2026.9.18-9.jpg"
 fictionalMaterials: false
 sourceDeck: "02_Students_Pick_the_Right_Job_for_AI.pdf"
 reviewStatus: draft

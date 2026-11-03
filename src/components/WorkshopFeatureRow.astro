@@ -2,6 +2,7 @@
 import type { CollectionEntry } from 'astro:content';
 import { url } from '../lib/url';
 import { POSTER_WIDTHS, POSTER_RATIO, assertPosterFiles } from '../lib/posters';
+import { PHOTO_WIDTHS, PHOTO_RATIO, assertPhotoFiles } from '../lib/photos';
 
 interface Props {
   workshop: CollectionEntry<'workshops'>;
@@ -12,28 +13,40 @@ interface Props {
 
 const { workshop, title = workshop.data.title, summary = workshop.data.summary, linkLabel = 'View workshop' } = Astro.props;
 const { data, id } = workshop;
-let poster: { src: string; srcset: string; alt: string } | undefined;
+let media: { src: string; srcset: string; alt: string; ratio: number; kind: 'poster' | 'photo' } | undefined;
 
 if (data.poster) {
   assertPosterFiles(data.poster.image, `src/content/workshops/${id}.md`);
   const base = `/posters/${data.poster.image}`;
-  poster = {
+  media = {
     src: url(`${base}-800.webp`),
     srcset: POSTER_WIDTHS.map((px) => `${url(`${base}-${px}.webp`)} ${px}w`).join(', '),
     alt: data.poster.alt,
+    ratio: POSTER_RATIO,
+    kind: 'poster',
+  };
+} else if (data.photo) {
+  assertPhotoFiles(data.photo.image, `src/content/workshops/${id}.md`);
+  const base = `/photos/${data.photo.image}`;
+  media = {
+    src: url(`${base}-800.webp`),
+    srcset: PHOTO_WIDTHS.map((px) => `${url(`${base}-${px}.webp`)} ${px}w`).join(', '),
+    alt: data.photo.alt,
+    ratio: PHOTO_RATIO,
+    kind: 'photo',
   };
 }
 ---
 <article class="workshop-feature">
-  <div class:list={['workshop-feature__media', { 'workshop-feature__media--placeholder': !poster }]}>
-    {poster ? (
+  <div class:list={['workshop-feature__media', media && `workshop-feature__media--${media.kind}`, { 'workshop-feature__media--placeholder': !media }]}>
+    {media ? (
       <img
-        src={poster.src}
-        srcset={poster.srcset}
+        src={media.src}
+        srcset={media.srcset}
         sizes="(min-width: 58rem) 31vw, 100vw"
         width="800"
-        height={Math.round(800 * POSTER_RATIO)}
-        alt={poster.alt}
+        height={Math.round(800 * media.ratio)}
+        alt={media.alt}
         loading="lazy"
       />
     ) : (
@@ -84,6 +97,7 @@ if (data.poster) {
     height: 100%;
     object-fit: contain;
   }
+  .workshop-feature__media--photo img { object-fit: cover; }
   .workshop-feature__media--placeholder {
     background: var(--maroon);
     border-color: var(--maroon);

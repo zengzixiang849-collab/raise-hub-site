@@ -14,6 +14,10 @@ practise: "Convert one non-private announcement into a Canvas page with a starte
 leaveWith: "One page you can post, and a method you can reuse every week."
 relatedProjects: [canvas-page-workflow]
 relatedResources: [check]
+photo:
+  image: "canvas-page-workshop"
+  alt: "Annus Azhar presents a worked example about checking an AI draft during the Canvas Page workshop."
+  source: "photo-review/raw/2026.9.11-The first workshop-Build a Canvas Page Students Actually Read/2026.9.11-20.jpg"
 fictionalMaterials: false
 sourceDeck: "01_Faculty_Canvas_Page.pdf"
 reviewStatus: draft

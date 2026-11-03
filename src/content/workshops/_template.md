@@ -15,6 +15,11 @@ practise: "What participants do during the session."
 leaveWith: "What participants take away."
 relatedProjects: []          # project slugs, e.g. [syllabot]
 relatedResources: []         # resource anchors, e.g. [decide, check]
+# Optional authentic workshop photo. Export variants with scripts/export-selected-photos.mjs.
+# photo:
+#   image: "workshop-photo-slug"
+#   alt: "Describe the visible teaching or learning action."
+#   source: "photo-review/raw/folder/original-file.jpg"
 fictionalMaterials: true
 sourceDeck: "file name of the deck (internal reference)"
 reviewStatus: draft          # draft | approved (only Annus approves)

@@ -41,6 +41,9 @@ const workshops = defineCollection({
     // Real A3 poster, exported to public/posters/<image>-{480,800,1200}.webp.
     // `alt` must carry everything the poster says (title, audience, tool, date, place, what to bring).
     poster: z.object({ image: text, alt: text }).optional(),
+    // Authentic workshop photograph exported to public/photos/<image>-<width>.webp.
+    // `source` records the internal original; it is not rendered on the public site.
+    photo: z.object({ image: text, alt: text, source: text }).optional(),
     fictionalMaterials: z.boolean().default(true),
     sourceDeck: z.string(), // internal reference, not rendered
     reviewStatus: review,
