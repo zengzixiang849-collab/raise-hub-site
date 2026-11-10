@@ -128,4 +128,15 @@ The project rules for anyone editing this site, human or AI, are in `../CLAUDE.m
 
 ## Deployment
 
-Planned for GitHub Pages, **after Annus approves the content**. Steps are in `../planning/build-playbook.md` ("周一之后：部署").
+The current review deployment is on Vercel:
+
+- Review URL: https://raise-hub-site.vercel.app
+- Vercel project: `raise-hub-site`
+- Source: private GitHub repository `raise-hub-site`
+- State: **draft for review**, with the review banner and `noindex` retained
+
+The local `.vercel/` project link is intentionally excluded from Git. An authenticated project owner can update the review deployment with the Vercel CLI after running the verification commands. Do not copy Vercel credentials into the repository or handover package.
+
+GitHub Pages is a future migration option, not the current host. `BASE_PATH` builds are still checked so the static site remains portable. A formal public deployment must wait until Annus approves the content and `$env:PUBLIC_DRAFT="false"; npm run build` succeeds.
+
+Internship status, open items, tools, and operating instructions are recorded in [`handover/README_HANDOVER.md`](handover/README_HANDOVER.md).
