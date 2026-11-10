@@ -14,6 +14,10 @@ practise: "Build “Course Guide and Draft Feedback” on a fictional syllabus, 
 leaveWith: "A checklist to adapt the example to your own course."
 relatedProjects: [course-guide-draft-feedback]
 relatedResources: [before-sharing]
+photo:
+  image: "ai-course-assistant-workshop"
+  alt: "Annus Azhar presents the principle “AI drafts, you verify” during a RAISE Hub workshop."
+  source: "photo-review/raw/2026.9.11-The first workshop-Build a Canvas Page Students Actually Read/2026.9.11-18.jpg"
 poster:
   image: "ai-course-assistant"
   alt: "Poster for the faculty workshop “Build and Test an AI Course Assistant Responsibly”, with Annus Azhar, RAISE Hub. The tool is ASU CreateAI Builder, no coding needed. Monday 26 October 2026, 1:15 to 2:00 PM, Room 2-208. Bring a laptop and your ASU login. Questions: Annus Azhar, annus.azhar@asu.edu."

@@ -24,6 +24,22 @@ const sources = {
     '..',
     'photo-review/raw/2026.9.18-The second workshop-Pick the Right Job for AI/2026.9.18-9.jpg',
   ),
+  'tsa-series-workshop': resolve(
+    '..',
+    'photo-review/raw/2026.10.21-The third workshop/2026.10.21-9.jpg',
+  ),
+  'ai-learning-assistant-workshop': resolve(
+    '..',
+    'photo-review/converted/2026.10.23/2026.10.23-5.jpg',
+  ),
+  'responsible-ai-workshop': resolve(
+    '..',
+    'photo-review/raw/2026.9.18-The second workshop-Pick the Right Job for AI/2026.9.18-6.jpg',
+  ),
+  'ai-course-assistant-workshop': resolve(
+    '..',
+    'photo-review/raw/2026.9.11-The first workshop-Build a Canvas Page Students Actually Read/2026.9.11-18.jpg',
+  ),
 };
 
 await mkdir(output, { recursive: true });

@@ -14,6 +14,10 @@ practise: "Fictional library-study and scholarship examples; bilingual (English/
 leaveWith: "A commitment for one real assignment: what AI could help with, what you will do yourself, and how you will check."
 relatedProjects: []
 relatedResources: [decide, check]
+photo:
+  image: "responsible-ai-workshop"
+  alt: "Annus Azhar discusses how students can decide which parts of a task should or should not use AI."
+  source: "photo-review/raw/2026.9.18-The second workshop-Pick the Right Job for AI/2026.9.18-6.jpg"
 poster:
   image: "using-ai-responsibly-freshmen"
   alt: "Poster for the freshman workshop “Using AI Responsibly: Know When to Use It, and How to Check It”, with Annus Azhar, RAISE Hub. Monday 26 October 2026, 11:35 AM to 12:20 PM, Room 3-A107. Questions: Annus Azhar, annus.azhar@asu.edu."

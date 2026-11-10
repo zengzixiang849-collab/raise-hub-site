@@ -15,17 +15,7 @@ const { workshop, title = workshop.data.title, summary = workshop.data.summary, 
 const { data, id } = workshop;
 let media: { src: string; srcset: string; alt: string; ratio: number; kind: 'poster' | 'photo' } | undefined;
 
-if (data.poster) {
-  assertPosterFiles(data.poster.image, `src/content/workshops/${id}.md`);
-  const base = `/posters/${data.poster.image}`;
-  media = {
-    src: url(`${base}-800.webp`),
-    srcset: POSTER_WIDTHS.map((px) => `${url(`${base}-${px}.webp`)} ${px}w`).join(', '),
-    alt: data.poster.alt,
-    ratio: POSTER_RATIO,
-    kind: 'poster',
-  };
-} else if (data.photo) {
+if (data.photo) {
   assertPhotoFiles(data.photo.image, `src/content/workshops/${id}.md`);
   const base = `/photos/${data.photo.image}`;
   media = {
@@ -34,6 +24,16 @@ if (data.poster) {
     alt: data.photo.alt,
     ratio: PHOTO_RATIO,
     kind: 'photo',
+  };
+} else if (data.poster) {
+  assertPosterFiles(data.poster.image, `src/content/workshops/${id}.md`);
+  const base = `/posters/${data.poster.image}`;
+  media = {
+    src: url(`${base}-800.webp`),
+    srcset: POSTER_WIDTHS.map((px) => `${url(`${base}-${px}.webp`)} ${px}w`).join(', '),
+    alt: data.poster.alt,
+    ratio: POSTER_RATIO,
+    kind: 'poster',
   };
 }
 ---
